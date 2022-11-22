@@ -1,0 +1,112 @@
+name: allojobstogo
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+2
+
+environment:
+  sdk: ">=2.15.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite:
+  path:
+  provider: ^6.0.1
+  flutter_icons: ^1.1.0
+  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.0.0
+  url_launcher: 6.0.3
+  share:
+  webview_flutter: ^2.0.12
+  image_picker: 0.8.3
+  file_picker: 4.0.1
+  datetime_picker_formfield: 2.0.0
+  custom_navigation_bar: ^0.8.2
+  flutter_custom_clippers: ^2.0.0
+  clip_shadow: ^0.2.1
+  firebase_messaging: "^10.0.0"
+  firebase_auth: ^1.2.0
+  firebase_core: ^1.2.0
+  font_awesome_flutter: ^9.0.0
+  cached_network_image: ^3.2.0
+  flutter_typeahead: ^3.2.3
+  cron: ^0.4.0
+  upgrader: ^3.11.0
+  country_code_picker: ^2.0.2
+  pin_code_fields: ^7.3.0
+  geolocator: ^8.0.0
+  location: ^4.3.0
+  google_maps_flutter:
+  uuid: 3.0.5
+  flutter_polyline_points: ^1.0.0
+  location_permissions: ^4.0.0
+  liquid_progress_indicator: ^0.4.0
+  carousel_slider: ^4.0.0
+  dotted_border: ^2.0.0+2
+  map_picker:
+  geocoding: ^2.0.1
+  android_intent: ^2.0.2
+  image_cropper: ^1.4.1
+  path_provider:
+  dio: ^4.0.4
+  percent_indicator: ^3.4.0
+  uni_links: ^0.5.1
+  flutter_swiper: ^1.1.6
+  vibration: ^1.7.3
+  flutter_svg: ^1.0.0
+  in_app_update: ^2.0.0
+  google_place: ^0.4.3
+  permission_handler: ^8.1.6
+  sliding_up_panel: ^2.0.0+1
+  new_version: ^0.3.1
+  expandable: ^5.0.1
+  package_info_plus: ^1.4.2
+  google_maps_webservice: ^0.0.19
+  flutter_google_places_hoc081098: ^1.0.0-nullsafety.0
+  google_api_headers: ^1.3.0
+
+
+dependency_overrides:
+  firebase_messaging_platform_interface: 3.1.6
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+
+  fonts:
+    - family: Metropolis
+      fonts:
+        - asset: assets/fonts/Metropolis-Regular.ttf
+        - asset: assets/fonts/Metropolis-RegularItalic.ttf
+          style: italic
+        - asset: assets/fonts/Metropolis-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Metropolis-BoldItalic.ttf
+          style: italic
+          weight: 700
+        - asset: assets/fonts/Metropolis-ExtraBold.ttf
+          weight: 900
+        - asset: assets/fonts/Metropolis-ExtraBoldItalic.ttf
+          style: italic
+          weight: 900
+        - asset: assets/fonts/Metropolis-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Metropolis-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Metropolis-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Metropolis-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
