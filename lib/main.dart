@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:allojobstogo/screens/auth/login_screen.dart';
+import 'package:allojobstogo/screens/candidats/dashboard_screen.dart';
+import 'package:allojobstogo/screens/entreprises/dashboard_entreprise_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -115,14 +117,14 @@ class _SplashScreenState extends State<SplashScreen> {
                       children: <Widget>[
                         CircleAvatar(
                           backgroundColor: Colors.white,
-                          radius: 50.0,
+                          radius: 60.0,
                           child: AssetImageMap(),
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 10.0),
                         ),
                         Text(
-                          Constants.appName + " BY WIICOM",
+                          Constants.appName,
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -157,10 +159,20 @@ class _SplashScreenState extends State<SplashScreen> {
           return LoginScreen();
         }));
       } else {
-        /* Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return DashboardScreen(0);
-        }));*/
+        Future<int> typeUser = SharedPreferencesHelper.getIntValue("type_user");
+        typeUser.then((int value) async {
+          if (value == 1) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) {
+              return DashboardScreen(0);
+            }));
+          } else {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) {
+              return DashboardEntrepriseScreen(0);
+            }));
+          }
+        });
       }
     });
   }
@@ -172,8 +184,8 @@ class AssetImageMap extends StatelessWidget {
     AssetImage imageAsset = AssetImage('assets/images/logo.png');
     Image image = Image(
       image: imageAsset,
-      width: 120.0,
-      height: 120.0,
+      width: 150.0,
+      height: 150.0,
     );
     return image;
   }

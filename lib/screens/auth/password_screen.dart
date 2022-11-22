@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:allojobstogo/screens/candidats/dashboard_screen.dart';
+import 'package:allojobstogo/screens/entreprises/dashboard_entreprise_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -197,30 +199,24 @@ class _PasswordScreenState extends State<PasswordScreen> {
       SharedPreferencesHelper.setValue(
           "telephone", dataUser['user']["telephone"]);
       SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
-      SharedPreferencesHelper.setValue("prenoms", dataUser['user']["prenoms"]);
       SharedPreferencesHelper.setIntValue("status", dataUser['user']["status"]);
-      SharedPreferencesHelper.setIntValue(
-          "is_meeting", dataUser['user']["is_meeting"]);
-      SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
-      SharedPreferencesHelper.setIntValue(
-          "is_ambassador", dataUser['user']["is_ambassador"]);
       SharedPreferencesHelper.setIntValue(
           "type_user", dataUser['user']["type_user"]);
       SharedPreferencesHelper.setIntValue("id", dataUser['user']["id"]);
       SharedPreferencesHelper.setValue("avatar", dataUser['user']["avatar"]);
-      SharedPreferencesHelper.setValue(
-          "solde", dataUser['user']["solde"].toString());
 
       SharedPreferencesHelper.setIntValue("step_auth", 1);
       if (dataUser['user']["type_user"] == 1) {
-        /* Navigator.of(context).pushAndRemoveUntil(
+        SharedPreferencesHelper.setValue(
+            "prenoms", dataUser['user']["prenoms"]);
+        Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => DashboardScreen(0)),
-            (Route<dynamic> route) => false);*/
+            (Route<dynamic> route) => false);
       } else {
-        /*Navigator.of(context).pushAndRemoveUntil(
+        Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-                builder: (context) => ConducteurDashboardScreen()),
-            (Route<dynamic> route) => false);*/
+                builder: (context) => DashboardEntrepriseScreen(0)),
+            (Route<dynamic> route) => false);
       }
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:allojobstogo/screens/entreprises/dashboard_entreprise_screen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +12,8 @@ import 'dart:convert';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+
+import '../candidats/dashboard_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   int typeUser;
@@ -30,18 +33,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _serieController = TextEditingController();
-  final _numeroController = TextEditingController();
-  final _marqueController = TextEditingController();
+  final _activiteController = TextEditingController();
+  final _emailController = TextEditingController();
   final _quartierController = TextEditingController();
+  final _dateController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _biographieController = TextEditingController();
+  final _lastDiplomeController = TextEditingController();
+  final _lastExperienceController = TextEditingController();
+  final _jobTitleController = TextEditingController();
+  final _villeController = TextEditingController();
+  final _posteController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordController2 = TextEditingController();
   bool _passwordVisible = false;
   bool _passwordVisible2 = false;
 
-  var _image, _vehicule;
+  var _image, _myCv;
   String img64 = "";
-  String vehicule64 = "";
+  String cv64 = "";
   String myAvatar = "/avatars/default.png";
 
   int currentStep = 0;
@@ -51,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     if (typeUser == 1) {
       setState(() {
-        countStep = 2;
+        countStep = 3;
       });
     }
     super.initState();
@@ -78,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             margin: EdgeInsets.only(top: 50),
             padding: EdgeInsets.all(10),
             child: Stepper(
-              type: StepperType.horizontal,
+              type: StepperType.vertical,
               currentStep: currentStep,
               elevation: 10,
               controlsBuilder: (context, details) {
@@ -88,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     (details.currentStep > 0)
                         ? Container(
                             padding: EdgeInsets.all(5),
-                            width: 80,
+                            width: 100,
                             child: RaisedButton(
                               elevation: 5.0,
                               onPressed: details.onStepCancel,
@@ -122,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     !isLoading
                         ? Container(
                             padding: EdgeInsets.all(5),
-                            width: 90,
+                            width: 120,
                             child: RaisedButton(
                               elevation: 5.0,
                               onPressed: details.onStepContinue,
@@ -165,16 +175,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }),
               onStepContinue: () {
                 bool isLastStep = (currentStep ==
-                    ((typeUser == 1)
-                                ? getSteps(hauteur, largeur)
-                                : getStepsConducteur(hauteur, largeur))
+                    ((typeUser == 2)
+                                ? getStepsEntreprise(hauteur, largeur)
+                                : getStepsCandidats(hauteur, largeur))
                             .length -
                         1);
                 if (isLastStep) {
                   if (typeUser == 1) {
                     registerUser(context);
                   } else {
-                    registerConducteur(context);
+                    registerEntreprise(context);
                   }
                 } else {
                   setState(() {
@@ -185,41 +195,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onStepTapped: (step) => setState(() {
                 currentStep = step;
               }),
-              steps: (typeUser == 1)
-                  ? getSteps(hauteur, largeur)
-                  : getStepsConducteur(hauteur, largeur),
+              steps: (typeUser == 2)
+                  ? getStepsEntreprise(hauteur, largeur)
+                  : getStepsCandidats(hauteur, largeur),
             )),
       ),
     );
   }
 
-  List<Step> getSteps(hauteur, largeur) {
+  List<Step> getStepsEntreprise(hauteur, largeur) {
     return <Step>[
       Step(
         state: currentStep > 0 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 0,
-        title: const Text("Informations"),
+        title: const Text("Informations principales"),
         content: Card(
             elevation: 10,
             child: Padding(
               child: Column(
                 children: [
                   CustomInput(
-                    hint: "Nom",
+                    hint: "Nom de la société",
                     type: TextInputType.text,
                     controller: _lastNameController,
                     maxLength: 25,
                   ),
                   CustomInput(
-                    hint: "Prénoms",
+                    hint: "Adresse mail",
                     type: TextInputType.text,
-                    controller: _firstNameController,
+                    controller: _emailController,
+                    maxLength: 30,
+                  ),
+                  CustomInput(
+                    hint: "Secteur d'activité",
+                    type: TextInputType.text,
+                    controller: _activiteController,
+                    maxLength: 30,
+                  ),
+                  CustomInput(
+                    hint: "Ville",
+                    type: TextInputType.text,
+                    controller: _villeController,
                     maxLength: 25,
                   ),
                   CustomInput(
                     hint: "Quartier",
                     type: TextInputType.text,
                     controller: _quartierController,
+                    maxLength: 25,
+                  ),
+                  CustomInput(
+                    hint: "Début de service",
+                    type: TextInputType.text,
+                    controller: _dateController,
                     maxLength: 25,
                   ),
                 ],
@@ -230,6 +258,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Step(
         state: currentStep > 1 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 1,
+        title: const Text("Informations complémentaires"),
+        content: Card(
+            elevation: 10,
+            child: Padding(
+              child: Column(
+                children: [
+                  Container(
+                    child: new GestureDetector(
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                        _showPicker(context);
+                      },
+                      child: new Center(
+                          child: new Stack(
+                        children: <Widget>[
+                          _image == null
+                              ? CircleAvatar(
+                                  radius: largeur < hauteur
+                                      ? largeur / 6
+                                      : hauteur / 6,
+                                  backgroundImage:
+                                      NetworkImage(Constants.host + myAvatar),
+                                  backgroundColor: Colors.white)
+                              : new CircleAvatar(
+                                  radius: 80,
+                                  child: ClipOval(
+                                    child: Align(
+                                      heightFactor: 1,
+                                      widthFactor: 2.0,
+                                      child: new Image.file(_image),
+                                    ),
+                                  )),
+                          Positioned(
+                              bottom: -5,
+                              right: -12,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    shape: CircleBorder(),
+                                    primary: Constants.primaryColor),
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  alignment: Alignment.center,
+                                  decoration:
+                                      BoxDecoration(shape: BoxShape.circle),
+                                  child: FaIcon(
+                                    FontAwesomeIcons.camera,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
+                                  _showPicker(context);
+                                },
+                              )),
+                        ],
+                      )),
+                    ),
+                  ),
+                  SizedBox(height: 5.0),
+                  Center(
+                      child: Text(
+                    "Votre logo ou photo du recruteur",
+                    style:
+                        TextStyle(color: Constants.primaryColor, fontSize: 17),
+                  )),
+                  SizedBox(height: 10.0),
+                  CustomInput(
+                    hint: "Quel poste recherchez-vous?",
+                    type: TextInputType.text,
+                    controller: _posteController,
+                    maxLength: 25,
+                  ),
+                  SizedBox(height: 5.0),
+                  TextField(
+                    maxLines: 4,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: currentFontFamily,
+                      fontSize: 15,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: "Description",
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 1, color: Constants.primaryColor),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                    ),
+                    controller: _descriptionController,
+                    keyboardType: TextInputType.text,
+                    maxLength: 400,
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(10),
+            )),
+      ),
+      Step(
+        state: currentStep > 2 ? StepState.complete : StepState.indexed,
+        isActive: currentStep >= 2,
         title: const Text("Mot de passe"),
         content: Card(
             elevation: 10,
@@ -242,7 +377,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(kPaddingM),
@@ -290,7 +425,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(kPaddingM),
@@ -337,12 +472,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ];
   }
 
-  List<Step> getStepsConducteur(hauteur, largeur) {
+  List<Step> getStepsCandidats(hauteur, largeur) {
     return <Step>[
       Step(
         state: currentStep > 0 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 0,
-        title: const Text("Informations"),
+        title: const Text("Informations personnelles"),
         content: Card(
             elevation: 10,
             child: Padding(
@@ -361,9 +496,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     maxLength: 25,
                   ),
                   CustomInput(
-                    hint: "Quartier",
+                    hint: "Ville",
                     type: TextInputType.text,
-                    controller: _quartierController,
+                    controller: _villeController,
                     maxLength: 25,
                   ),
                 ],
@@ -374,7 +509,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Step(
         state: currentStep > 1 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 1,
-        title: const Text("Engin"),
+        title: const Text("Informations Professionelles"),
         content: Card(
             elevation: 10,
             child: Padding(
@@ -444,92 +579,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   )),
                   SizedBox(height: 10.0),
                   CustomInput(
-                    hint: "Marque(Ex: Mazda, Haojue)",
+                    hint: "Adresse mail",
                     type: TextInputType.text,
-                    controller: _marqueController,
+                    controller: _emailController,
                     maxLength: 25,
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        "Immatriculation",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: currentFontFamily,
-                          fontSize: 19,
-                        ),
-                      )
-                    ],
+                  SizedBox(height: 5.0),
+                  CustomInput(
+                    hint: "Votre dernier diplôme",
+                    type: TextInputType.text,
+                    controller: _lastDiplomeController,
+                    maxLength: 25,
                   ),
-                  Row(children: [
-                    Expanded(
-                      child: CustomInput(
-                        hint: "Série(AZ)",
-                        type: TextInputType.text,
-                        controller: _serieController,
-                        maxLength: 2,
+                  SizedBox(height: 5.0),
+                  TextField(
+                    maxLines: 4,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: currentFontFamily,
+                      fontSize: 15,
+                    ),
+                    decoration: InputDecoration(
+                      hintText:
+                          "Décrivez votre dernière expérience ainsi que l'entreprise",
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 1, color: Constants.primaryColor),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
                     ),
-                    SizedBox(
-                      width: 10,
+                    controller: _lastExperienceController,
+                    keyboardType: TextInputType.text,
+                    maxLength: 160,
+                  ),
+                  SizedBox(height: 5.0),
+                  CustomInput(
+                    hint: "Intitulé du poste recherché",
+                    type: TextInputType.text,
+                    controller: _jobTitleController,
+                    maxLength: 25,
+                  ),
+                  SizedBox(height: 5.0),
+                  TextField(
+                    maxLines: 4,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: currentFontFamily,
+                      fontSize: 15,
                     ),
-                    Expanded(
-                      child: CustomInput(
-                        hint: "Numéro de plaque",
-                        type: TextInputType.number,
-                        controller: _numeroController,
-                        maxLength: 4,
+                    decoration: InputDecoration(
+                      hintText: "Décrivez vous",
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )
-                  ]),
-                  GestureDetector(
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                      _showPickerVehicule(context);
-                    },
-                    child: new DottedBorder(
-                        dashPattern: [6, 3, 2, 3],
-                        borderType: BorderType.RRect,
-                        radius: Radius.circular(12),
-                        padding: EdgeInsets.all(6),
-                        color: Colors.grey,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                          child: GestureDetector(
-                            child: Container(
-                              height: 100,
-                              child: _vehicule == null
-                                  ? Center(
-                                      child: Column(children: [
-                                        SizedBox(height: 5),
-                                        FaIcon(FontAwesomeIcons.fileUpload,
-                                            size: 50, color: Colors.grey),
-                                        SizedBox(height: 10),
-                                        Text(
-                                          "Photo du véhicule",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ]),
-                                    )
-                                  : Center(
-                                      child: Align(
-                                      heightFactor: 1,
-                                      widthFactor: 1.0,
-                                      child: new Image.file(_vehicule),
-                                    )),
-                            ),
-                            onTap: () async {
-                              FocusScope.of(context)
-                                  .requestFocus(new FocusNode());
-                              _showPickerVehicule(context);
-                            },
-                          ),
-                        )),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 1, color: Constants.primaryColor),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                    ),
+                    controller: _biographieController,
+                    keyboardType: TextInputType.text,
+                    maxLength: 400,
                   ),
                 ],
               ),
@@ -551,7 +667,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(kPaddingM),
@@ -599,7 +715,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(kPaddingM),
@@ -676,7 +792,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
   }
 
-  void _showPickerVehicule(context) {
+  void _showPickerCV(context) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
@@ -748,14 +864,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (image != null) {
       setState(() {
-        _vehicule = File(image.path);
+        _myCv = File(image.path);
       });
 
       final bytes = File(image.path).readAsBytesSync();
 
       setState(() {
-        vehicule64 = base64Encode(bytes);
-        print(vehicule64);
+        cv64 = base64Encode(bytes);
+        print(cv64);
       });
     }
   }
@@ -766,14 +882,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (image != null) {
       setState(() {
-        _vehicule = File(image.path);
+        _myCv = File(image.path);
       });
 
       final bytes = File(image.path).readAsBytesSync();
 
       setState(() {
-        vehicule64 = base64Encode(bytes);
-        print(vehicule64);
+        cv64 = base64Encode(bytes);
+        print(cv64);
       });
     }
   }
@@ -790,10 +906,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> registerUser(BuildContext context) async {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
-    final quartier = _quartierController.text.trim();
+    final ville = _villeController.text.trim();
+    final email = _emailController.text.trim();
+    final lastDiplome = _lastDiplomeController.text.trim();
+    final lastExperience = _lastExperienceController.text.trim();
+    final jobTitle = _jobTitleController.text.trim();
+    final biographie = _biographieController.text.trim();
     final password = _passwordController.text.trim();
     final confirm = _passwordController2.text.trim();
-    if (firstName == "" || quartier == "" || lastName == "") {
+    if (firstName == "" ||
+        ville == "" ||
+        lastName == "" ||
+        lastDiplome == "" ||
+        lastExperience == "" ||
+        jobTitle == "" ||
+        biographie == "" ||
+        email == "") {
       _showAlertDialog(
           'Désolé', 'Veuillez renseigner vos informations personnelles.');
     } else if (password == "" || confirm == "") {
@@ -811,10 +939,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'first_name': firstName,
             'last_name': lastName,
             'password': password,
-            'email': "email",
+            'email': email,
+            'biographie': biographie,
+            'last_diplome': "last_diplome",
+            'last_experience': "last_experience",
+            'type_user': typeUser.toString(),
+            'job': jobTitle,
             'pays': pays,
-            'quartier': quartier,
-            'parrainage': "",
+            'ville': ville,
+            'avatar': img64,
+            'cv': cv64,
             'telephone': telephone
           });
       print(response.body);
@@ -824,7 +958,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           isLoading = false;
         });
         _showAlertDialog('Désolé',
-            'Erreur survenue lors de l\'inscription. Code parrain invalide.');
+            'Erreur survenue lors de l\'inscription. Numéro déjà utilisé');
       } else {
         setState(() {
           isLoading = false;
@@ -835,14 +969,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
         SharedPreferencesHelper.setValue(
-            "solde", dataUser['user']["solde"].toString());
-        SharedPreferencesHelper.setValue(
             "prenoms", dataUser['user']["prenoms"]);
-        SharedPreferencesHelper.setIntValue(
-            "is_meeting", dataUser['user']["is_meeting"]);
-        SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
-        SharedPreferencesHelper.setIntValue(
-            "is_ambassador", dataUser['user']["is_ambassador"]);
         SharedPreferencesHelper.setIntValue(
             "status", dataUser['user']["status"]);
         SharedPreferencesHelper.setIntValue(
@@ -850,60 +977,61 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setIntValue("id", dataUser['user']["id"]);
         SharedPreferencesHelper.setValue("avatar", dataUser['user']["avatar"]);
         SharedPreferencesHelper.setIntValue("step_auth", 1);
+        SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
 
-        /* Navigator.of(context).pushAndRemoveUntil(
+        Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => DashboardScreen(0)),
-            (Route<dynamic> route) => false);*/
+            (Route<dynamic> route) => false);
       }
     }
   }
 
-  Future<void> registerConducteur(BuildContext context) async {
-    final firstName = _firstNameController.text.trim();
+  Future<void> registerEntreprise(BuildContext context) async {
     final lastName = _lastNameController.text.trim();
-    final quartier = _quartierController.text.trim();
+    final ville = _villeController.text.trim();
     final password = _passwordController.text.trim();
     final confirm = _passwordController2.text.trim();
-    final serie = _serieController.text.trim();
-    final numero = _numeroController.text.trim();
-    final marque = _marqueController.text.trim();
+    final description = _descriptionController.text.trim();
+    final activite = _activiteController.text.trim();
+    final poste = _posteController.text.trim();
+    final email = _emailController.text.trim();
+    final quartier = _quartierController.text.trim();
+    final dateDebut = _dateController.text.trim();
 
-    if (firstName == "" || quartier == "" || lastName == "") {
+    if (ville == "" ||
+        lastName == "" ||
+        description == "" ||
+        activite == "" ||
+        poste == "" ||
+        email == "" ||
+        quartier == "") {
       _showAlertDialog(
           'Désolé', 'Veuillez renseigner vos informations personnelles.');
     } else if (password == "" || confirm == "") {
       _showAlertDialog('Désolé', 'Veuillez créer des mots de passes valides.');
     } else if (password != confirm) {
       _showAlertDialog('Désolé', 'Mots de passes non identiques.');
-    } else if (serie == "" || numero == "" || marque == "") {
-      _showAlertDialog('Désolé',
-          'Veuillez renseigner toutes les informations concernant votre engin.');
-    } else if (img64 == "") {
-      _showAlertDialog('Désolé', 'Veuillez téléverser une photo de vous.');
-    } else if (vehicule64 == "") {
-      _showAlertDialog(
-          'Désolé', 'Veuillez téléverser la photo de votre véhicule.');
     } else {
       setState(() {
         isLoading = true;
       });
       final response = await http.post(
           Uri.parse(Constants.host +
-              "/api/auth/register-conducteur?token=" +
+              "/api/auth/register-entreprise?token=" +
               Constants.token),
           body: {
-            'first_name': firstName,
-            'last_name': lastName,
+            'name': lastName,
             'password': password,
-            'email': "email",
+            'email': email,
             'pays': pays,
-            'marque': marque,
             'quartier': quartier,
-            'immatriculation': serie + " " + numero.toString(),
-            'type_user': typeUser.toString(),
+            'date_debut': dateDebut,
+            'activite': activite,
+            'description': description,
+            'poste': poste,
+            'ville': ville,
             'avatar': img64,
-            'vehicule': vehicule64,
-            'parrainage': "",
+            'type_user': typeUser.toString(),
             'telephone': telephone
           });
       print(response.body);
@@ -923,28 +1051,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setValue(
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
-        SharedPreferencesHelper.setValue(
-            "prenoms", dataUser['user']["prenoms"]);
-        SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
         SharedPreferencesHelper.setIntValue(
             "status", dataUser['user']["status"]);
         SharedPreferencesHelper.setIntValue(
             "type_user", dataUser['user']["type_user"]);
         SharedPreferencesHelper.setIntValue("id", dataUser['user']["id"]);
         SharedPreferencesHelper.setValue("avatar", dataUser['user']["avatar"]);
-        SharedPreferencesHelper.setValue(
-            "solde", dataUser['user']["solde"].toString());
-        SharedPreferencesHelper.setIntValue(
-            "is_meeting", dataUser['user']["is_meeting"]);
         SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
-        SharedPreferencesHelper.setIntValue(
-            "is_ambassador", dataUser['user']["is_ambassador"]);
         SharedPreferencesHelper.setIntValue("step_auth", 1);
 
-        /* Navigator.of(context).pushAndRemoveUntil(
+        Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-                builder: (context) => ConducteurDashboardScreen()),
-            (Route<dynamic> route) => false);*/
+                builder: (context) => DashboardEntrepriseScreen(0)),
+            (Route<dynamic> route) => false);
       }
     }
   }

@@ -70,7 +70,7 @@ class CustomInput extends StatelessWidget {
           style: TextStyle(
             color: Colors.black,
             fontFamily: currentFontFamily,
-            fontSize: 16,
+            fontSize: 15,
           ),
           decoration:
               InputDecoration(hintText: hint!, border: OutlineInputBorder()),

@@ -95,7 +95,7 @@ class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
                                       width: 10,
                                     ),
                                     Text(
-                                      'CLIENT',
+                                      'DEMANDEUR',
                                       style: TextStyle(
                                         color: Colors.white,
                                         letterSpacing: 1.5,
@@ -122,53 +122,13 @@ class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                 ),
-                                color: Colors.white,
+                                color: Constants.thridColor,
                                 child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       FaIcon(
-                                        FontAwesomeIcons.motorcycle,
-                                        size: 20,
-                                        color: Color(0xFF00684F),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        'CONDUCTEUR MOTO',
-                                        style: TextStyle(
-                                          color: Color(0xFF00684F),
-                                          letterSpacing: 1.5,
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: currentFontFamily,
-                                        ),
-                                      ),
-                                    ])),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            width: double.infinity,
-                            child: RaisedButton(
-                                elevation: 5.0,
-                                onPressed: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return RegisterScreen(3, telephone, pays);
-                                  }));
-                                },
-                                padding: EdgeInsets.all(10.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                color: Colors.orange,
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      FaIcon(
-                                        FontAwesomeIcons.caravan,
+                                        FontAwesomeIcons.building,
                                         size: 20,
                                         color: Colors.white,
                                       ),
@@ -176,47 +136,7 @@ class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
                                         width: 10,
                                       ),
                                       Text(
-                                        'CONDUCTEUR TRICYCLE',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          letterSpacing: 1.5,
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: currentFontFamily,
-                                        ),
-                                      ),
-                                    ])),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            width: double.infinity,
-                            child: RaisedButton(
-                                elevation: 5.0,
-                                onPressed: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return RegisterScreen(4, telephone, pays);
-                                  }));
-                                },
-                                padding: EdgeInsets.all(10.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                color: Colors.black,
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      FaIcon(
-                                        FontAwesomeIcons.car,
-                                        size: 20,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        'CONDUCTEUR VOITURE',
+                                        'EMPLOYEUR',
                                         style: TextStyle(
                                           color: Colors.white,
                                           letterSpacing: 1.5,

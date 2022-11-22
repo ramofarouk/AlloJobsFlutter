@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
   static const String logo = "assets/images/logo.png";
-  static String appName = "AllôJobs Togo";
+  static String appName = "AllôJobs";
 
   static String host2 = "https://allojobs.kofcorporation.com";
 
@@ -34,6 +34,13 @@ class Constants {
       }
     }
     return priceInText.trim();
+  }
+
+  static String formatNumber(int number) {
+    if (number <= 9) {
+      return "0" + number.toString();
+    }
+    return number.toString();
   }
 
   static String getRandomInt(int length) {
