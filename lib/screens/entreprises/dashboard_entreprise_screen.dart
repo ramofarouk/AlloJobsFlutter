@@ -10,6 +10,8 @@ import 'dart:async';
 
 import '../auth/login_screen.dart';
 import 'home_screen.dart';
+import 'list_entreprises_screen.dart';
+import 'profile_screen.dart';
 
 class DashboardEntrepriseScreen extends StatefulWidget {
   int preIndex;
@@ -91,7 +93,11 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
         setState(() {});
       });
 
-    _widgetOptions = <Widget>[HomeScreen(_controller)];
+    _widgetOptions = <Widget>[
+      HomeScreen(_controller),
+      ListEntreprisesScreen(_controller),
+      ProfileSceen()
+    ];
 
     super.initState();
   }
@@ -176,13 +182,17 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
       backgroundColor: Colors.white,
       items: [
         CustomNavigationBarItem(
-          icon: Icon(Icons.home),
-          title: Text("Accueil"),
+          icon: Icon(Icons.person),
+          title: Text("Candidats"),
         ),
-        /* CustomNavigationBarItem(
+        CustomNavigationBarItem(
+          icon: Icon(Icons.business),
+          title: Text("Entreprises"),
+        ),
+        CustomNavigationBarItem(
           icon: Icon(Icons.settings),
           title: Text("Profil"),
-        ),*/
+        ),
       ],
       currentIndex: _currentIndex,
       onTap: (index) {

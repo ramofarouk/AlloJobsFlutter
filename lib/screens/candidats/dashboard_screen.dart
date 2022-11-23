@@ -1,16 +1,28 @@
 import 'dart:io';
 
 import 'package:allojobstogo/screens/candidats/home_screen.dart';
+import 'package:allojobstogo/screens/candidats/list_candidats_screen.dart';
 import 'package:allojobstogo/utils/constants.dart';
 import 'package:allojobstogo/utils/preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
+import 'package:flutter_beep/flutter_beep.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 import 'dart:async';
 
 import '../auth/login_screen.dart';
+
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification!.body}');
+  Vibration.vibrate(
+    pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],
+    intensities: [128, 255, 64, 255],
+  );
+  FlutterBeep.playSysSound(39);
+}
 
 class DashboardScreen extends StatefulWidget {
   int preIndex;
@@ -55,6 +67,41 @@ class _DashboardScreenState extends State<DashboardScreen>
   void initState() {
     messaging = FirebaseMessaging.instance;
     messaging.subscribeToTopic("allojobs");
+    token.then((String value) async {
+      // print(value);
+      setState(() {
+        messaging.subscribeToTopic("allojobs" + value);
+      });
+    });
+    FirebaseMessaging.onBackgroundMessage(_messageHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('Message clicked!');
+    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message recieved");
+      Vibration.vibrate(
+        pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],
+        intensities: [128, 255, 64, 255],
+      );
+      FlutterBeep.playSysSound(39);
+      print(event.notification!.body);
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Alerte"),
+              content: Text(event.notification!.body!),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    });
     auth.then((int value) async {
       // print(value);
       setState(() {
@@ -98,7 +145,10 @@ class _DashboardScreenState extends State<DashboardScreen>
         setState(() {});
       });
 
-    _widgetOptions = <Widget>[HomeScreen(_controller)];
+    _widgetOptions = <Widget>[
+      HomeScreen(_controller),
+      ListCandidatScreen(_controller)
+    ];
 
     super.initState();
   }
@@ -183,13 +233,13 @@ class _DashboardScreenState extends State<DashboardScreen>
       backgroundColor: Colors.white,
       items: [
         CustomNavigationBarItem(
-          icon: Icon(Icons.home),
-          title: Text("Accueil"),
+          icon: Icon(Icons.business),
+          title: Text("Entreprises"),
         ),
-        /* CustomNavigationBarItem(
-          icon: Icon(Icons.inbox),
-          title: Text("Mes soumissions"),
-        ),*/
+        CustomNavigationBarItem(
+          icon: Icon(Icons.person),
+          title: Text("Candidats"),
+        ),
       ],
       currentIndex: _currentIndex,
       onTap: (index) {

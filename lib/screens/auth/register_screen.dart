@@ -4,6 +4,7 @@ import 'package:allojobstogo/screens/entreprises/dashboard_entreprise_screen.dar
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:allojobstogo/utils/constants.dart';
 import 'package:allojobstogo/utils/preferences.dart';
@@ -49,9 +50,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _passwordVisible = false;
   bool _passwordVisible2 = false;
 
-  var _image, _myCv;
+  var _image;
   String img64 = "";
-  String cv64 = "";
   String myAvatar = "/avatars/default.png";
 
   int currentStep = 0;
@@ -226,6 +226,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _emailController,
                     maxLength: 30,
                   ),
+                  Text(
+                    "Merci de fournir un email valide. Les CV recoltés y sont acheminés.",
+                    style: TextStyle(
+                        color: Constants.secondaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
                   CustomInput(
                     hint: "Secteur d'activité",
                     type: TextInputType.text,
@@ -242,13 +252,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: "Quartier",
                     type: TextInputType.text,
                     controller: _quartierController,
-                    maxLength: 25,
+                    maxLength: 45,
                   ),
                   CustomInput(
                     hint: "Début de service",
                     type: TextInputType.text,
                     controller: _dateController,
-                    maxLength: 25,
+                    maxLength: 45,
                   ),
                 ],
               ),
@@ -323,15 +333,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Center(
                       child: Text(
                     "Votre logo ou photo du recruteur",
+                    textAlign: TextAlign.center,
                     style:
-                        TextStyle(color: Constants.primaryColor, fontSize: 17),
+                        TextStyle(color: Constants.primaryColor, fontSize: 15),
                   )),
                   SizedBox(height: 10.0),
                   CustomInput(
                     hint: "Quel poste recherchez-vous?",
                     type: TextInputType.text,
                     controller: _posteController,
-                    maxLength: 25,
+                    maxLength: 45,
                   ),
                   SizedBox(height: 5.0),
                   TextField(
@@ -582,14 +593,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: "Adresse mail",
                     type: TextInputType.text,
                     controller: _emailController,
-                    maxLength: 25,
+                    maxLength: 45,
                   ),
                   SizedBox(height: 5.0),
                   CustomInput(
                     hint: "Votre dernier diplôme",
                     type: TextInputType.text,
                     controller: _lastDiplomeController,
-                    maxLength: 25,
+                    maxLength: 45,
                   ),
                   SizedBox(height: 5.0),
                   TextField(
@@ -621,7 +632,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hint: "Intitulé du poste recherché",
                     type: TextInputType.text,
                     controller: _jobTitleController,
-                    maxLength: 25,
+                    maxLength: 45,
                   ),
                   SizedBox(height: 5.0),
                   TextField(
@@ -762,6 +773,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ];
   }
 
+  onImageButtonPressed(ImageSource source,
+      {required BuildContext context}) async {
+    final ImagePicker _picker = ImagePicker();
+    File val;
+
+    final pickedFile = await _picker.getImage(
+      source: source,
+    );
+
+    val = (await ImageCropper().cropImage(
+      sourcePath: pickedFile!.path,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+      compressQuality: 100,
+      maxHeight: 400,
+      maxWidth: 400,
+      compressFormat: ImageCompressFormat.jpg,
+      androidUiSettings: AndroidUiSettings(
+        toolbarColor: Constants.primaryColor,
+        toolbarTitle: "AllôJobs",
+      ),
+    ))!;
+
+    setState(() {
+      _image = val;
+    });
+
+    final bytes = File(val.path).readAsBytesSync();
+
+    setState(() {
+      img64 = base64Encode(bytes);
+      print(img64);
+    });
+    // print("cropper ${val.runtimeType}");
+    //capturedImageFile(val.path);
+  }
+
   void _showPicker(context) {
     showModalBottomSheet(
         context: context,
@@ -770,18 +817,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Container(
               child: new Wrap(
                 children: <Widget>[
+                  Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    padding: EdgeInsets.all(5),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
                   new ListTile(
                       leading: new Icon(Icons.photo_library),
                       title: new Text('Téléverser une photo'),
                       onTap: () {
-                        _imgFromGallery();
+                        onImageButtonPressed(ImageSource.gallery,
+                            context: context);
+                        //_imgFromGallery();
                         Navigator.of(context).pop();
                       }),
                   new ListTile(
                     leading: new Icon(Icons.photo_camera),
                     title: new Text('Camera'),
                     onTap: () {
-                      _imgFromCamera();
+                      onImageButtonPressed(ImageSource.camera,
+                          context: context);
+                      //_imgFromCamera();
                       Navigator.of(context).pop();
                     },
                   ),
@@ -790,108 +854,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           );
         });
-  }
-
-  void _showPickerCV(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Téléverser une photo'),
-                      onTap: () {
-                        _imgFromGalleryCni();
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
-                    onTap: () {
-                      _imgFromCameraCni();
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  _imgFromCamera() async {
-    PickedFile? image = await ImagePicker()
-        .getImage(source: ImageSource.camera, imageQuality: 50);
-
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-      });
-
-      final bytes = File(image.path).readAsBytesSync();
-
-      setState(() {
-        img64 = base64Encode(bytes);
-        print(img64);
-      });
-    }
-  }
-
-  _imgFromGallery() async {
-    PickedFile? image = await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 50);
-
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-      });
-
-      final bytes = File(image.path).readAsBytesSync();
-
-      setState(() {
-        img64 = base64Encode(bytes);
-        print(img64);
-      });
-    }
-  }
-
-  _imgFromCameraCni() async {
-    PickedFile? image = await ImagePicker()
-        .getImage(source: ImageSource.camera, imageQuality: 50);
-
-    if (image != null) {
-      setState(() {
-        _myCv = File(image.path);
-      });
-
-      final bytes = File(image.path).readAsBytesSync();
-
-      setState(() {
-        cv64 = base64Encode(bytes);
-        print(cv64);
-      });
-    }
-  }
-
-  _imgFromGalleryCni() async {
-    PickedFile? image = await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 50);
-
-    if (image != null) {
-      setState(() {
-        _myCv = File(image.path);
-      });
-
-      final bytes = File(image.path).readAsBytesSync();
-
-      setState(() {
-        cv64 = base64Encode(bytes);
-        print(cv64);
-      });
-    }
   }
 
   void _showAlertDialog(String title, String content) {
@@ -923,9 +885,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         biographie == "" ||
         email == "") {
       _showAlertDialog(
-          'Désolé', 'Veuillez renseigner vos informations personnelles.');
+          'Désolé', 'Veuillez renseigner toutes vos informations.');
     } else if (password == "" || confirm == "") {
       _showAlertDialog('Désolé', 'Veuillez créer des mots de passes valides.');
+    } else if (img64 == "") {
+      _showAlertDialog('Désolé', 'Veuillez téléverser votre photo');
     } else if (password != confirm) {
       _showAlertDialog('Désolé', 'Mots de passes non identiques.');
     } else {
@@ -941,14 +905,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'password': password,
             'email': email,
             'biographie': biographie,
-            'last_diplome': "last_diplome",
-            'last_experience': "last_experience",
+            'last_diplome': lastDiplome,
+            'last_experience': lastExperience,
             'type_user': typeUser.toString(),
             'job': jobTitle,
             'pays': pays,
             'ville': ville,
             'avatar': img64,
-            'cv': cv64,
+            'cv': "",
             'telephone': telephone
           });
       print(response.body);
@@ -1006,7 +970,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email == "" ||
         quartier == "") {
       _showAlertDialog(
-          'Désolé', 'Veuillez renseigner vos informations personnelles.');
+          'Désolé', 'Veuillez renseigner toutes les informations.');
+    } else if (img64 == "") {
+      _showAlertDialog('Désolé', 'Veuillez téléverser votre photo');
     } else if (password == "" || confirm == "") {
       _showAlertDialog('Désolé', 'Veuillez créer des mots de passes valides.');
     } else if (password != confirm) {
@@ -1051,6 +1017,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setValue(
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
+        SharedPreferencesHelper.setValue(
+            "activite", dataUser['user']["activite"]);
+        SharedPreferencesHelper.setValue(
+            "description", dataUser['user']["description"]);
+        SharedPreferencesHelper.setValue(
+            "quartier", dataUser['user']["quartier"]);
+        SharedPreferencesHelper.setValue("ville", dataUser['user']["ville"]);
+        SharedPreferencesHelper.setValue("email", dataUser['user']["email"]);
+        SharedPreferencesHelper.setValue(
+            "date_debut", dataUser['user']["date_debut"]);
+        SharedPreferencesHelper.setValue("job", dataUser['user']["job"]);
         SharedPreferencesHelper.setIntValue(
             "status", dataUser['user']["status"]);
         SharedPreferencesHelper.setIntValue(

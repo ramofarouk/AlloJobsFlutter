@@ -5,7 +5,6 @@ import 'package:allojobstogo/models/entreprises.dart';
 import 'package:allojobstogo/utils/constants.dart';
 import 'package:allojobstogo/utils/preferences.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -14,18 +13,19 @@ import 'package:http/http.dart' as http;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
-class HomeScreen extends StatefulWidget {
+class ListEntreprisesScreen extends StatefulWidget {
   final AnimationController _controller;
-  HomeScreen(this._controller);
+  ListEntreprisesScreen(this._controller);
   @override
-  _HomeScreenState createState() => _HomeScreenState(this._controller);
+  _ListEntreprisesScreenState createState() =>
+      _ListEntreprisesScreenState(this._controller);
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
   late double _scale;
   final AnimationController _controller;
 
-  _HomeScreenState(this._controller);
+  _ListEntreprisesScreenState(this._controller);
 
   String firstName = "";
   String lastName = "";
@@ -44,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   var _myCv;
   String cv64 = "";
-  String _myCvName = "";
 
   _onPageChanged(int index) {
     setState(() {
@@ -166,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     padding: EdgeInsets.all(5),
                                     child: ListView(children: [
                                       Container(
-                                        height: screenSize.height * .3,
+                                        height: screenSize.height * .35,
                                         decoration: BoxDecoration(
                                             image: DecorationImage(
                                                 fit: BoxFit.fitWidth,
@@ -316,21 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         height: 20,
                                         color: Colors.grey,
                                       ),
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Colors.green),
-                                        child: Container(
-                                          width: screenSize.width * 0.9,
-                                          height: 50,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle),
-                                          child: Text("SOUMETTRE MON CV"),
-                                        ),
-                                        onPressed: () async {
-                                          _showPopUp(screenSize, entreprise);
-                                        },
-                                      )
                                     ]))));
                       })))
           : Container(
@@ -399,261 +383,5 @@ class _HomeScreenState extends State<HomeScreen> {
               ))
           : Center(),
     ]);
-  }
-
-  void _showAlertDialog(String title, String content) {
-    var alertDialog = AlertDialog(
-      title: Text(title),
-      content: Text(content),
-    );
-    showDialog(
-        context: this.context, builder: (BuildContext context) => alertDialog);
-  }
-
-  Future<void> registerUser(screenSize, entreprise) async {
-    if (cv64 == "") {
-      _showAlertDialog('Désolé', 'Veuillez téléverser votre CV.');
-    } else {
-      setState(() {
-        isLoading = true;
-      });
-      final response = await http.post(
-          Uri.parse(
-              Constants.host + "/api/soumission/add?token=" + Constants.token),
-          body: {
-            'entreprise_id': entreprise.id.toString(),
-            'cv': cv64,
-            'user_id': idUser
-          });
-      print(response.body);
-      var dataUser = json.decode(response.body);
-      if (dataUser['error'] == true) {
-        setState(() {
-          isLoading = false;
-        });
-        _showAlertDialog('Désolé', 'Erreur survenue lors de la soumission!');
-      } else {
-        setState(() {
-          isLoading = false;
-          cv64 = "";
-          _myCv = null;
-        });
-        print(dataUser['message']);
-        print(dataUser['user']);
-
-        showModalBottomSheet(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            isScrollControlled: true,
-            isDismissible: false,
-            context: this.context,
-            builder: (context) {
-              return Container(
-                height: screenSize.height * 0.5,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: Icon(Icons.clear),
-                        ),
-                      ],
-                    ),
-                    Image.asset(
-                      "assets/images/success.png",
-                      height: 150,
-                      width: 150,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Text(
-                          "Nous acheminons votre au recruteur. Seules les personnes sélectionnées seront contactées.",
-                          style: TextStyle(color: Colors.black, fontSize: 20),
-                          textAlign: TextAlign.center),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      child: TextButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Constants.primaryColor)),
-                        onPressed: () {
-                          Navigator.of(context).pop(context);
-                        },
-                        child: Text(
-                          "Fermer",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            });
-      }
-    }
-  }
-
-  void _showPopUp(screenSize, entreprise) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black,
-                            offset: Offset(0, 10),
-                            blurRadius: 10),
-                      ]),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        "Soumettre mon CV",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          Navigator.pop(context);
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          pickFile(context, screenSize, entreprise);
-                        },
-                        child: new DottedBorder(
-                            dashPattern: [6, 3, 2, 3],
-                            borderType: BorderType.RRect,
-                            radius: Radius.circular(12),
-                            padding: EdgeInsets.all(6),
-                            color: Colors.grey,
-                            child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12)),
-                              child: GestureDetector(
-                                child: Container(
-                                  height: 100,
-                                  child: _myCvName == ""
-                                      ? Center(
-                                          child: Column(children: [
-                                            SizedBox(height: 5),
-                                            FaIcon(FontAwesomeIcons.fileUpload,
-                                                size: 50, color: Colors.grey),
-                                            SizedBox(height: 10),
-                                            Text(
-                                              "Votre CV",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                          ]),
-                                        )
-                                      : Center(
-                                          child: Align(
-                                          heightFactor: 1,
-                                          widthFactor: 1.0,
-                                          child: Text(_myCvName),
-                                        )),
-                                ),
-                                onTap: () async {
-                                  Navigator.pop(context);
-                                  FocusScope.of(context)
-                                      .requestFocus(new FocusNode());
-                                  pickFile(context, screenSize, entreprise);
-                                },
-                              ),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(primary: Colors.green),
-                        child: Container(
-                          width: screenSize.width * 0.9,
-                          height: 50,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          child: Text("VALIDER"),
-                        ),
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          registerUser(screenSize, entreprise);
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
-  }
-
-  Future<void> pickFile(BuildContext context, screenSize, entreprise) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
-    if (result != null) {
-      PlatformFile file = result.files.first;
-
-      setState(() {
-        _myCvName = file.name;
-      });
-
-      final bytes = File(file.path).readAsBytesSync();
-
-      setState(() {
-        cv64 = base64Encode(bytes);
-        print(cv64);
-      });
-
-      _showPopUp(screenSize, entreprise);
-
-      /* print(file.name);
-      print(file.bytes);
-      print(file.size);
-      print(file.extension);
-      print(file.path);*/
-    } else {
-      print("No file selected");
-    }
   }
 }

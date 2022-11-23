@@ -13,18 +13,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'details_candidat_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class ListCandidatScreen extends StatefulWidget {
   final AnimationController _controller;
-  HomeScreen(this._controller);
+  ListCandidatScreen(this._controller);
   @override
-  _HomeScreenState createState() => _HomeScreenState(this._controller);
+  _ListCandidatScreenState createState() =>
+      _ListCandidatScreenState(this._controller);
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _ListCandidatScreenState extends State<ListCandidatScreen> {
   late double _scale;
   final AnimationController _controller;
 
-  _HomeScreenState(this._controller);
+  _ListCandidatScreenState(this._controller);
 
   String firstName = "";
   String lastName = "";

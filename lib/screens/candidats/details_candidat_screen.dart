@@ -82,68 +82,15 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
                       child: ListView(
                     children: [
                       Container(
-                          height: screenSize.height * .4,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  fit: BoxFit.fitWidth,
-                                  image: NetworkImage(
-                                      Constants.host + candidat.avatar)),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30.0))),
-                          child: (candidat.status == 1)
-                              ? new Stack(children: <Widget>[
-                                  Positioned(
-                                      bottom: 7,
-                                      left: -12,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            shape: CircleBorder(),
-                                            primary: Colors.green),
-                                        child: Container(
-                                          width: 50,
-                                          height: 50,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle),
-                                          child: FaIcon(
-                                            FontAwesomeIcons.whatsapp,
-                                            color: Colors.white,
-                                            size: 20,
-                                          ),
-                                        ),
-                                        onPressed: () async {
-                                          UrlLauncher.launch("https://wa.me/" +
-                                              candidat.telephone.toString());
-                                        },
-                                      )),
-                                  Positioned(
-                                    bottom: 7,
-                                    right: -12,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          shape: CircleBorder(),
-                                          primary: Colors.blue),
-                                      child: Container(
-                                        width: 50,
-                                        height: 50,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle),
-                                        child: FaIcon(
-                                          FontAwesomeIcons.phone,
-                                          color: Colors.white,
-                                          size: 20,
-                                        ),
-                                      ),
-                                      onPressed: () async {
-                                        String telephone =
-                                            Uri.encodeComponent('91484848');
-                                        UrlLauncher.launch('tel:$telephone');
-                                      },
-                                    ),
-                                  )
-                                ])
-                              : Center()),
+                        height: screenSize.height * .4,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: NetworkImage(
+                                    Constants.host + candidat.avatar)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30.0))),
+                      ),
                       SizedBox(
                         height: 20,
                       ),
