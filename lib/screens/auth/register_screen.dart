@@ -822,9 +822,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Text(
                       "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Constants.secondaryColor),
                     ),
-                    padding: EdgeInsets.all(5),
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
                   ),
                   Divider(
                     height: 1,
@@ -1020,14 +1022,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setValue(
             "activite", dataUser['user']["activite"]);
         SharedPreferencesHelper.setValue(
-            "description", dataUser['user']["description"]);
-        SharedPreferencesHelper.setValue(
             "quartier", dataUser['user']["quartier"]);
         SharedPreferencesHelper.setValue("ville", dataUser['user']["ville"]);
         SharedPreferencesHelper.setValue("email", dataUser['user']["email"]);
-        SharedPreferencesHelper.setValue(
-            "date_debut", dataUser['user']["date_debut"]);
-        SharedPreferencesHelper.setValue("job", dataUser['user']["job"]);
         SharedPreferencesHelper.setIntValue(
             "status", dataUser['user']["status"]);
         SharedPreferencesHelper.setIntValue(
@@ -1037,11 +1034,86 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
         SharedPreferencesHelper.setIntValue("step_auth", 1);
 
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => DashboardEntrepriseScreen(0)),
-            (Route<dynamic> route) => false);
+        _showPopupAlert(context);
       }
     }
+  }
+
+  void _showPopupAlert(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        isScrollControlled: true,
+        isDismissible: false,
+        context: context,
+        builder: (context) {
+          return Container(
+            height: size.height * 0.5,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    DashboardEntrepriseScreen(0)),
+                            (Route<dynamic> route) => false);
+                      },
+                      icon: Icon(Icons.clear),
+                    ),
+                  ],
+                ),
+                Image.asset(
+                  "assets/images/success.png",
+                  height: 150,
+                  width: 150,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                      "Votre annonce est  bien enregistrée et sera validée dans les 24h ouvrables. Nous pouvons être amenés à vous appeler.",
+                      style: TextStyle(color: Colors.black),
+                      textAlign: TextAlign.center),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Constants.primaryColor)),
+                    onPressed: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DashboardEntrepriseScreen(0)),
+                          (Route<dynamic> route) => false);
+                    },
+                    child: Text(
+                      "Accéder au tableau de bord",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
+        });
   }
 }

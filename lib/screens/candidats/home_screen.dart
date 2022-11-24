@@ -71,19 +71,22 @@ class _HomeScreenState extends State<HomeScreen> {
       print(data);
       setState(() {
         for (var i in data) {
-          listEntreprises.add(ModelEntreprise(
-            i['id'],
-            i['nom'],
-            i['description'],
-            i['avatar'],
-            i['ville'],
-            i['activite'],
-            i['job'],
-            i['telephone'],
-            i['quartier'],
-            i['date_debut'],
-            i['status'],
-          ));
+          if (int.parse(i['entreprise']['status']) == 1) {
+            print("he");
+            listEntreprises.add(ModelEntreprise(
+              i['id'],
+              i['entreprise']['nom'],
+              i['description'],
+              i['entreprise']['avatar'],
+              i['entreprise']['ville'],
+              i['entreprise']['activite'],
+              i['job'],
+              i['entreprise']['telephone'],
+              i['entreprise']['quartier'],
+              i['date_debut'],
+              int.parse(i['entreprise']['status']),
+            ));
+          }
         }
 
         isLoading = false;
@@ -135,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
       !isLoading
           ? Container(
               margin: EdgeInsets.only(top: 5),
-              height: screenSize.height * 0.7,
+              height: screenSize.height * 0.75,
               width: screenSize.width,
               child: Padding(
                   padding: const EdgeInsets.all(5),
@@ -310,6 +313,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Text("Date: " + entreprise.dateDebut,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                      new Divider(
+                                        height: 20,
+                                        color: Colors.grey,
+                                      ),
+                                      Row(
+                                        children: [
+                                          FaIcon(
+                                            FontAwesomeIcons.briefcase,
+                                            color: Colors.grey,
+                                            size: 25,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Container(
+                                            width: screenSize.width * 0.75,
+                                            child: Text(entreprise.description,
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
                                         ],
                                       ),
                                       new Divider(

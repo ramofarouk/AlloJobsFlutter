@@ -96,7 +96,7 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
     _widgetOptions = <Widget>[
       HomeScreen(_controller),
       ListEntreprisesScreen(_controller),
-      ProfileSceen()
+      ProfileScreen()
     ];
 
     super.initState();

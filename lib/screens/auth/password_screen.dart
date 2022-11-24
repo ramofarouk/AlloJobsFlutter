@@ -216,14 +216,9 @@ class _PasswordScreenState extends State<PasswordScreen> {
         SharedPreferencesHelper.setValue(
             "activite", dataUser['user']["activite"]);
         SharedPreferencesHelper.setValue(
-            "description", dataUser['user']["description"]);
-        SharedPreferencesHelper.setValue(
             "quartier", dataUser['user']["quartier"]);
         SharedPreferencesHelper.setValue("ville", dataUser['user']["ville"]);
         SharedPreferencesHelper.setValue("email", dataUser['user']["email"]);
-        SharedPreferencesHelper.setValue(
-            "date_debut", dataUser['user']["date_debut"]);
-        SharedPreferencesHelper.setValue("job", dataUser['user']["job"]);
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (context) => DashboardEntrepriseScreen(0)),

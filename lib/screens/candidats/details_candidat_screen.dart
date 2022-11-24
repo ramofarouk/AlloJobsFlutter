@@ -187,8 +187,11 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
                           SizedBox(
                             width: 10,
                           ),
-                          Text("Poste recherché: " + candidat.job,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Container(
+                            width: screenSize.width * 0.75,
+                            child: Text("Poste recherché: " + candidat.job,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
                         ],
                       ),
                       new Divider(
@@ -205,8 +208,12 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
                           SizedBox(
                             width: 10,
                           ),
-                          Text("Dernier diplôme: " + candidat.lastDiplome,
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Container(
+                            width: screenSize.width * 0.75,
+                            child: Text(
+                                "Dernier diplôme: " + candidat.lastDiplome,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
                         ],
                       ),
                       new Divider(
