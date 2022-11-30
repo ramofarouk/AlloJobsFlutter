@@ -5,8 +5,8 @@
 
     <!-- You can insert your own image assets here -->
     <item
-        android:height="125sp"
-        android:width="150sp"
+        android:height="130sp"
+        android:width="130sp"
         android:drawable="@drawable/logo"
         android:gravity="center"/>
 </layer-list>
