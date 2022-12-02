@@ -934,10 +934,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setValue(
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
-        SharedPreferencesHelper.setValue(
-            "prenoms", dataUser['user']["prenoms"]);
+
         SharedPreferencesHelper.setIntValue(
             "status", dataUser['user']["status"]);
+        SharedPreferencesHelper.setValue(
+            "quartier", dataUser['user']["quartier"]);
+        SharedPreferencesHelper.setValue("ville", dataUser['user']["ville"]);
+        SharedPreferencesHelper.setValue("email", dataUser['user']["email"]);
+        SharedPreferencesHelper.setValue(
+            "prenoms", dataUser['user']["prenoms"]);
+        SharedPreferencesHelper.setValue(
+            "last_diplome", dataUser['user']["last_diplome"]);
+        SharedPreferencesHelper.setValue("job", dataUser['user']["job"]);
+        SharedPreferencesHelper.setValue(
+            "description", dataUser['user']["description"]);
+        SharedPreferencesHelper.setValue(
+            "last_experience", dataUser['user']["last_experience"]);
+        SharedPreferencesHelper.setValue(
+            "prenoms", dataUser['user']["prenoms"]);
         SharedPreferencesHelper.setIntValue(
             "type_user", dataUser['user']["type_user"]);
         SharedPreferencesHelper.setIntValue("id", dataUser['user']["id"]);

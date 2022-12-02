@@ -11,9 +11,13 @@ import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
+
+import 'dart:convert';
 import 'dart:async';
+import 'package:http/http.dart' as http;
 
 import '../auth/login_screen.dart';
+import 'profile_screen.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
   print('background message ${message.notification!.body}');
@@ -71,6 +75,12 @@ class _DashboardScreenState extends State<DashboardScreen>
       // print(value);
       setState(() {
         messaging.subscribeToTopic("allojobs" + value);
+      });
+    });
+    id.then((int value) async {
+      // print(value);
+      setState(() {
+        idUser = value.toString();
       });
     });
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
@@ -147,7 +157,8 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     _widgetOptions = <Widget>[
       HomeScreen(_controller),
-      ListCandidatScreen(_controller)
+      ListCandidatScreen(_controller),
+      ProfileScreen()
     ];
 
     super.initState();
@@ -200,6 +211,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                       elevation: 4,
                       onSelected: (value) {
                         switch (value) {
+                          case 1:
+                            _showDeleteAccount("Suppression de compte",
+                                "Êtes-vous sûr de vous de supprimer votre compte ?");
+                            break;
                           case 2:
                             _showLogoutDialog("Déconnexion",
                                 "Êtes-vous sûr de vous déconnecter ?");
@@ -210,6 +225,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                             PopupMenuItem(
                               child: Text("Déconnexion"),
                               value: 2,
+                            ),
+                            PopupMenuItem(
+                              child: Text("Supprimer mon compte"),
+                              value: 1,
                             )
                           ])
                   : Center()
@@ -239,6 +258,10 @@ class _DashboardScreenState extends State<DashboardScreen>
         CustomNavigationBarItem(
           icon: Icon(Icons.person),
           title: Text("Candidats"),
+        ),
+        CustomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          title: Text("Profil"),
         ),
       ],
       currentIndex: _currentIndex,
@@ -440,6 +463,112 @@ class _DashboardScreenState extends State<DashboardScreen>
             ),
           );
         });
+  }
+
+  void _showDeleteAccount(String title, String content) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(
+                      left: 10, top: 20 + 20, right: 10, bottom: 10),
+                  margin: EdgeInsets.only(top: 47),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black,
+                            offset: Offset(0, 10),
+                            blurRadius: 10),
+                      ]),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Text(
+                        content,
+                        style: TextStyle(fontSize: 14),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(
+                        height: 22,
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Row(
+                          children: [
+                            FlatButton(
+                              child: Text('Non',
+                                  style: TextStyle(color: Colors.red)),
+                              onPressed: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                              },
+                            ),
+                            FlatButton(
+                              color: Constants.primaryColor,
+                              child: Text('Oui',
+                                  style: TextStyle(color: Colors.white)),
+                              onPressed: () {
+                                _deleteAccount();
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  left: 10,
+                  right: 10,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 40,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(40)),
+                        child: Image.asset(
+                          "assets/images/logo.png",
+                          height: 50,
+                          width: 50,
+                        )),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<void> _deleteAccount() async {
+    final response = await http.post(
+        Uri.parse(
+            Constants.host + "/api/auth/delete-user?token=" + Constants.token),
+        body: {'id': idUser.toString()});
+    print(response.body);
+    var dataUser = json.decode(response.body);
+    initializePreferences(context);
+
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+        (Route<dynamic> route) => false);
   }
 
   Future<void> initializePreferences(BuildContext context) async {
