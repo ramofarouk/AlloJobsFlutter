@@ -6,6 +6,7 @@ import 'package:allojobstogo/utils/constants.dart';
 import 'package:allojobstogo/utils/preferences.dart';
 import 'package:allojobstogo/widgets/custom_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,6 +16,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen();
@@ -39,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _activiteController = TextEditingController();
   final _emailController = TextEditingController();
   final _quartierController = TextEditingController();
-  final _dateController = TextEditingController();
+  //final _dateController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _villeController = TextEditingController();
   final _posteController = TextEditingController();
@@ -53,6 +55,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String myAvatar = "/avatars/default.png";
 
   List<ModelOffre> listOffres = [];
+
+  String dateDebut = "";
+  final format = DateFormat("yyyy-MM-dd");
 
   @override
   void initState() {
@@ -631,14 +636,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         controller: _posteController,
                         maxLength: 45,
                       ),
-                      SizedBox(height: 10.0),
-                      CustomInput(
-                        hint: "Début de service",
-                        type: TextInputType.text,
-                        controller: _dateController,
-                        maxLength: 45,
-                      ),
                       SizedBox(height: 5.0),
+                      DateTimeField(
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.event,
+                            color: Colors.black,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                          ),
+                          contentPadding: EdgeInsets.all(10),
+                          hintText: "Début de service",
+                          hintStyle: TextStyle(fontFamily: currentFontFamily),
+                          border: InputBorder.none,
+                        ),
+                        format: format,
+                        onShowPicker: (context, currentValue) async {
+                          final date = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1900),
+                              initialDate: DateTime.now(),
+                              lastDate: DateTime(2100));
+                          if (date != null) {
+                            setState(() {
+                              dateDebut = date.toString();
+                            });
+                            print(dateDebut);
+                            return date;
+                          } else {
+                            setState(() {
+                              dateDebut = currentValue.toString();
+                            });
+                            return currentValue;
+                          }
+                        },
+                      ),
+                      SizedBox(height: 10.0),
                       TextField(
                         maxLines: 4,
                         style: TextStyle(
@@ -743,7 +784,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final description = _descriptionController.text.trim();
 
     final poste = _posteController.text.trim();
-    final dateDebut = _dateController.text.trim();
 
     if (description == "" || poste == "" || dateDebut == "") {
       _showAlertDialog(

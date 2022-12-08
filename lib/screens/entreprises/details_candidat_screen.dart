@@ -136,8 +136,8 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
                                         ),
                                       ),
                                       onPressed: () async {
-                                        String telephone =
-                                            Uri.encodeComponent('91484848');
+                                        String telephone = Uri.encodeComponent(
+                                            candidat.telephone.toString());
                                         UrlLauncher.launch('tel:$telephone');
                                       },
                                     ),
