@@ -14,17 +14,15 @@ import 'list_entreprises_screen.dart';
 import 'profile_screen.dart';
 
 class DashboardEntrepriseScreen extends StatefulWidget {
-  int preIndex;
-  DashboardEntrepriseScreen(this.preIndex);
+  final int preIndex;
+  const DashboardEntrepriseScreen(this.preIndex, {super.key});
   @override
-  _DashboardEntrepriseScreenState createState() =>
-      _DashboardEntrepriseScreenState(this.preIndex);
+  DashboardEntrepriseScreenState createState() =>
+      DashboardEntrepriseScreenState();
 }
 
-class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
+class DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
     with SingleTickerProviderStateMixin {
-  int preIndex;
-  _DashboardEntrepriseScreenState(this.preIndex);
   String name = "";
   String phone = "";
 
@@ -54,7 +52,14 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
   @override
   void initState() {
     messaging = FirebaseMessaging.instance;
-    messaging.subscribeToTopic("allojobs");
+    messaging.subscribeToTopic("allojobsentreprise");
+    token.then((String value) async {
+      // print(value);
+      setState(() {
+        messaging.subscribeToTopic("allojobsentreprise$value");
+      });
+    });
+
     auth.then((int value) async {
       // print(value);
       setState(() {
@@ -79,12 +84,12 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
     });
 
     setState(() {
-      _currentIndex = preIndex;
+      _currentIndex = widget.preIndex;
     });
 
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(
+      duration: const Duration(
         milliseconds: 500,
       ),
       lowerBound: 0.0,
@@ -94,8 +99,8 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
       });
 
     _widgetOptions = <Widget>[
-      HomeScreen(_controller),
-      ListEntreprisesScreen(_controller),
+      HomeScreen(),
+      ListEntreprisesScreen(),
       ProfileScreen()
     ];
 
@@ -123,6 +128,7 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
         child: Scaffold(
           appBar: AppBar(
             leading: Padding(
+              padding: EdgeInsets.all(7),
               child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Image.asset(
@@ -130,9 +136,8 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
                     height: 30,
                     width: 30,
                   )),
-              padding: EdgeInsets.all(7),
             ),
-            title: Text(
+            title: const Text(
               'RECRUTEUR',
               style: TextStyle(
                   // headline6 is used for setting title's theme
@@ -145,7 +150,7 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
             actions: [
               (isAuth)
                   ? PopupMenuButton(
-                      icon: Icon(Icons.more_vert),
+                      icon: const Icon(Icons.more_vert),
                       elevation: 4,
                       onSelected: (value) {
                         switch (value) {
@@ -156,12 +161,12 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
                         }
                       },
                       itemBuilder: (context) => [
-                            PopupMenuItem(
-                              child: Text("Déconnexion"),
+                            const PopupMenuItem(
                               value: 2,
+                              child: Text("Déconnexion"),
                             )
                           ])
-                  : Center()
+                  : const Center()
             ],
           ),
           body: Center(child: _widgetOptions.elementAt(_currentIndex)),
@@ -177,21 +182,21 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
     return CustomNavigationBar(
       iconSize: 35.0,
       selectedColor: Constants.primaryColor,
-      strokeColor: Color(0x30040307),
-      unSelectedColor: Color(0xffacacac),
+      strokeColor: const Color(0x30040307),
+      unSelectedColor: const Color(0xffacacac),
       backgroundColor: Colors.white,
       items: [
         CustomNavigationBarItem(
-          icon: Icon(Icons.person),
-          title: Text("Candidats"),
+          icon: const Icon(Icons.person),
+          title: const Text("Candidats"),
         ),
         CustomNavigationBarItem(
-          icon: Icon(Icons.business),
-          title: Text("Entreprises"),
+          icon: const Icon(Icons.business),
+          title: const Text("Entreprises"),
         ),
         CustomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          title: Text("Profil"),
+          icon: const Icon(Icons.settings),
+          title: const Text("Profil"),
         ),
       ],
       currentIndex: _currentIndex,
@@ -214,14 +219,14 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
             child: Stack(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       left: 10, top: 20 + 20, right: 10, bottom: 10),
-                  margin: EdgeInsets.only(top: 47),
+                  margin: const EdgeInsets.only(top: 47),
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black,
                             offset: Offset(0, 10),
@@ -230,20 +235,20 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
+                      const Text(
                         "Alerte",
                         style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
-                      Text(
+                      const Text(
                         "Êtes-vous sûr de quitter l'application?",
                         style: TextStyle(fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 22,
                       ),
                       Align(
@@ -251,17 +256,19 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FlatButton(
-                              child: Text('Fermer',
+                            TextButton(
+                              child: const Text('Fermer',
                                   style: TextStyle(color: Colors.red)),
                               onPressed: () {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
                               },
                             ),
-                            FlatButton(
-                              color: Constants.primaryColor,
-                              child: Text('OUI',
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Constants.primaryColor,
+                              ),
+                              child: const Text('OUI',
                                   style: TextStyle(color: Colors.white)),
                               onPressed: () {
                                 exit(0);
@@ -280,7 +287,8 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
                     backgroundColor: Colors.white,
                     radius: 40,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(40)),
                         child: Image.asset(
                           "assets/images/logo.png",
                           height: 70,
@@ -308,14 +316,14 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
             child: Stack(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       left: 10, top: 20 + 20, right: 10, bottom: 10),
-                  margin: EdgeInsets.only(top: 47),
+                  margin: const EdgeInsets.only(top: 47),
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black,
                             offset: Offset(0, 10),
@@ -326,43 +334,44 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
                     children: <Widget>[
                       Text(
                         title,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Text(
                         content,
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 22,
                       ),
                       Align(
                         alignment: Alignment.bottomRight,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FlatButton(
-                              child: Text('Non',
+                            TextButton(
+                              child: const Text('Non',
                                   style: TextStyle(color: Colors.red)),
                               onPressed: () {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
                               },
                             ),
-                            FlatButton(
-                              color: Constants.primaryColor,
-                              child: Text('Oui',
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Constants.primaryColor,
+                              ),
+                              child: const Text('Oui',
                                   style: TextStyle(color: Colors.white)),
                               onPressed: () {
                                 SharedPreferencesHelper.setIntValue(
                                     "step_auth", 0);
-                                token.then((String value) async {
-                                  FirebaseMessaging.instance
-                                      .unsubscribeFromTopic("mauto" + value);
-                                });
+                                FirebaseMessaging.instance
+                                    .unsubscribeFromTopic("allojobsentreprise");
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                         builder: (context) => LoginScreen()),
@@ -382,7 +391,8 @@ class _DashboardEntrepriseScreenState extends State<DashboardEntrepriseScreen>
                     backgroundColor: Colors.white,
                     radius: 40,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(40)),
                         child: Image.asset(
                           "assets/images/logo.png",
                           height: 50,

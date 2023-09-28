@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       systemNavigationBarDividerColor: Colors.grey,
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
-    Map<int, Color> color = {
+    Map<int, Color> color = const {
       50: Color.fromRGBO(15, 106, 78, .1),
       100: Color.fromRGBO(15, 106, 78, .2),
       200: Color.fromRGBO(15, 106, 78, .3),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:allojobstogo/utils/constants.dart';
@@ -10,14 +9,11 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CustomButton(
-      {required this.color,
+      {super.key,
+      required this.color,
       required this.textColor,
       required this.text,
-      required this.onPressed})
-      : assert(color != null),
-        assert(textColor != null),
-        assert(text != null),
-        assert(onPressed != null);
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +21,23 @@ class CustomButton extends StatelessWidget {
       constraints: const BoxConstraints(
         minWidth: double.infinity,
       ),
-      child: FlatButton(
-        color: color,
-        padding: EdgeInsets.all(kPaddingM),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: const EdgeInsets.all(kPaddingM),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
+          ),
         ),
+        onPressed: onPressed,
         child: Text(
           text,
           textAlign: TextAlign.center,
           style: Theme.of(context)
               .textTheme
-              .subtitle1!
+              .titleMedium!
               .copyWith(color: textColor, fontWeight: FontWeight.bold),
         ),
-        onPressed: onPressed,
       ),
     );
   }
@@ -67,13 +65,13 @@ class CustomInput extends StatelessWidget {
           inputFormatters: [
             LengthLimitingTextInputFormatter(maxLength),
           ],
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontFamily: currentFontFamily,
             fontSize: 15,
           ),
-          decoration:
-              InputDecoration(hintText: hint!, border: OutlineInputBorder()),
+          decoration: InputDecoration(
+              hintText: hint!, border: const OutlineInputBorder()),
           controller: controller,
         ));
   }

@@ -20,7 +20,6 @@ import '../auth/login_screen.dart';
 import 'profile_screen.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
-  print('background message ${message.notification!.body}');
   Vibration.vibrate(
     pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],
     intensities: [128, 255, 64, 255],
@@ -29,16 +28,14 @@ Future<void> _messageHandler(RemoteMessage message) async {
 }
 
 class DashboardScreen extends StatefulWidget {
-  int preIndex;
-  DashboardScreen(this.preIndex);
+  final int preIndex;
+  const DashboardScreen(this.preIndex, {super.key});
   @override
-  _DashboardScreenState createState() => _DashboardScreenState(this.preIndex);
+  DashboardScreenState createState() => DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen>
+class DashboardScreenState extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
-  int preIndex;
-  _DashboardScreenState(this.preIndex);
   String firstName = "";
   String lastName = "";
   String phone = "";
@@ -74,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     token.then((String value) async {
       // print(value);
       setState(() {
-        messaging.subscribeToTopic("allojobs" + value);
+        messaging.subscribeToTopic("allojobs$value");
       });
     });
     id.then((int value) async {
@@ -84,26 +81,23 @@ class _DashboardScreenState extends State<DashboardScreen>
       });
     });
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print('Message clicked!');
-    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {});
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print("message recieved");
       Vibration.vibrate(
         pattern: [500, 1000, 500, 2000, 500, 3000, 500, 500],
         intensities: [128, 255, 64, 255],
       );
       FlutterBeep.playSysSound(39);
-      print(event.notification!.body);
+
       showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Alerte"),
+              title: const Text("Alerte"),
               content: Text(event.notification!.body!),
               actions: [
                 TextButton(
-                  child: Text("Ok"),
+                  child: const Text("Ok"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -141,12 +135,12 @@ class _DashboardScreenState extends State<DashboardScreen>
       });
     });
     setState(() {
-      _currentIndex = preIndex;
+      _currentIndex = widget.preIndex;
     });
 
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(
+      duration: const Duration(
         milliseconds: 500,
       ),
       lowerBound: 0.0,
@@ -156,9 +150,9 @@ class _DashboardScreenState extends State<DashboardScreen>
       });
 
     _widgetOptions = <Widget>[
-      HomeScreen(_controller),
-      ListCandidatScreen(_controller),
-      ProfileScreen()
+      const HomeScreen(),
+      const ListCandidatScreen(),
+      const ProfileScreen()
     ];
 
     super.initState();
@@ -185,6 +179,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         child: Scaffold(
           appBar: AppBar(
             leading: Padding(
+              padding: const EdgeInsets.all(7),
               child: CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Image.asset(
@@ -192,9 +187,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                     height: 30,
                     width: 30,
                   )),
-              padding: EdgeInsets.all(7),
             ),
-            title: Text(
+            title: const Text(
               'ALLÔJOBS',
               style: TextStyle(
                   // headline6 is used for setting title's theme
@@ -207,7 +201,7 @@ class _DashboardScreenState extends State<DashboardScreen>
             actions: [
               (isAuth)
                   ? PopupMenuButton(
-                      icon: Icon(Icons.more_vert),
+                      icon: const Icon(Icons.more_vert),
                       elevation: 4,
                       onSelected: (value) {
                         switch (value) {
@@ -222,16 +216,16 @@ class _DashboardScreenState extends State<DashboardScreen>
                         }
                       },
                       itemBuilder: (context) => [
-                            PopupMenuItem(
-                              child: Text("Déconnexion"),
+                            const PopupMenuItem(
                               value: 2,
+                              child: Text("Déconnexion"),
                             ),
-                            PopupMenuItem(
-                              child: Text("Supprimer mon compte"),
+                            const PopupMenuItem(
                               value: 1,
+                              child: Text("Supprimer mon compte"),
                             )
                           ])
-                  : Center()
+                  : const Center()
             ],
           ),
           body: Center(child: _widgetOptions.elementAt(_currentIndex)),
@@ -247,21 +241,21 @@ class _DashboardScreenState extends State<DashboardScreen>
     return CustomNavigationBar(
       iconSize: 35.0,
       selectedColor: Constants.primaryColor,
-      strokeColor: Color(0x30040307),
-      unSelectedColor: Color(0xffacacac),
+      strokeColor: const Color(0x30040307),
+      unSelectedColor: const Color(0xffacacac),
       backgroundColor: Colors.white,
       items: [
         CustomNavigationBarItem(
-          icon: Icon(Icons.business),
-          title: Text("Entreprises"),
+          icon: const Icon(Icons.business),
+          title: const Text("Entreprises"),
         ),
         CustomNavigationBarItem(
-          icon: Icon(Icons.person),
-          title: Text("Candidats"),
+          icon: const Icon(Icons.person),
+          title: const Text("Candidats"),
         ),
         CustomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          title: Text("Profil"),
+          icon: const Icon(Icons.settings),
+          title: const Text("Profil"),
         ),
       ],
       currentIndex: _currentIndex,
@@ -284,14 +278,14 @@ class _DashboardScreenState extends State<DashboardScreen>
             child: Stack(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       left: 10, top: 20 + 20, right: 10, bottom: 10),
-                  margin: EdgeInsets.only(top: 47),
+                  margin: const EdgeInsets.only(top: 47),
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black,
                             offset: Offset(0, 10),
@@ -300,20 +294,20 @@ class _DashboardScreenState extends State<DashboardScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
+                      const Text(
                         "Alerte",
                         style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
-                      Text(
+                      const Text(
                         "Êtes-vous sûr de quitter l'application?",
                         style: TextStyle(fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 22,
                       ),
                       Align(
@@ -321,17 +315,19 @@ class _DashboardScreenState extends State<DashboardScreen>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FlatButton(
-                              child: Text('Fermer',
+                            TextButton(
+                              child: const Text('Fermer',
                                   style: TextStyle(color: Colors.red)),
                               onPressed: () {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
                               },
                             ),
-                            FlatButton(
-                              color: Constants.primaryColor,
-                              child: Text('OUI',
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Constants.primaryColor,
+                              ),
+                              child: const Text('OUI',
                                   style: TextStyle(color: Colors.white)),
                               onPressed: () {
                                 exit(0);
@@ -350,7 +346,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                     backgroundColor: Colors.white,
                     radius: 40,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(40)),
                         child: Image.asset(
                           "assets/images/logo.png",
                           height: 70,
@@ -378,14 +375,14 @@ class _DashboardScreenState extends State<DashboardScreen>
             child: Stack(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       left: 10, top: 20 + 20, right: 10, bottom: 10),
-                  margin: EdgeInsets.only(top: 47),
+                  margin: const EdgeInsets.only(top: 47),
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black,
                             offset: Offset(0, 10),
@@ -396,41 +393,44 @@ class _DashboardScreenState extends State<DashboardScreen>
                     children: <Widget>[
                       Text(
                         title,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Text(
                         content,
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 22,
                       ),
                       Align(
                         alignment: Alignment.bottomRight,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FlatButton(
-                              child: Text('Non',
+                            TextButton(
+                              child: const Text('Non',
                                   style: TextStyle(color: Colors.red)),
                               onPressed: () {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
                               },
                             ),
-                            FlatButton(
-                              color: Constants.primaryColor,
-                              child: Text('Oui',
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Constants.primaryColor,
+                              ),
+                              child: const Text('Oui',
                                   style: TextStyle(color: Colors.white)),
                               onPressed: () {
-                                initializePreferences(context);
+                                initializePreferences();
                                 token.then((String value) async {
                                   FirebaseMessaging.instance
-                                      .unsubscribeFromTopic("mauto" + value);
+                                      .unsubscribeFromTopic("allojobs$value");
                                 });
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
@@ -451,7 +451,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                     backgroundColor: Colors.white,
                     radius: 40,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(40)),
                         child: Image.asset(
                           "assets/images/logo.png",
                           height: 50,
@@ -478,14 +479,14 @@ class _DashboardScreenState extends State<DashboardScreen>
             child: Stack(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       left: 10, top: 20 + 20, right: 10, bottom: 10),
-                  margin: EdgeInsets.only(top: 47),
+                  margin: const EdgeInsets.only(top: 47),
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black,
                             offset: Offset(0, 10),
@@ -496,35 +497,38 @@ class _DashboardScreenState extends State<DashboardScreen>
                     children: <Widget>[
                       Text(
                         title,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Text(
                         content,
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 22,
                       ),
                       Align(
                         alignment: Alignment.bottomRight,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FlatButton(
-                              child: Text('Non',
+                            TextButton(
+                              child: const Text('Non',
                                   style: TextStyle(color: Colors.red)),
                               onPressed: () {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
                               },
                             ),
-                            FlatButton(
-                              color: Constants.primaryColor,
-                              child: Text('Oui',
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Constants.primaryColor,
+                              ),
+                              child: const Text('Oui',
                                   style: TextStyle(color: Colors.white)),
                               onPressed: () {
                                 _deleteAccount();
@@ -543,7 +547,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                     backgroundColor: Colors.white,
                     radius: 40,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(40)),
                         child: Image.asset(
                           "assets/images/logo.png",
                           height: 50,
@@ -560,18 +565,22 @@ class _DashboardScreenState extends State<DashboardScreen>
   Future<void> _deleteAccount() async {
     final response = await http.post(
         Uri.parse(
-            Constants.host + "/api/auth/delete-user?token=" + Constants.token),
+            "${Constants.host}/api/auth/delete-user?token=${Constants.token}"),
         body: {'id': idUser.toString()});
-    print(response.body);
-    var dataUser = json.decode(response.body);
-    initializePreferences(context);
 
+    json.decode(response.body);
+    initializePreferences();
+
+    moveToLogin();
+  }
+
+  void moveToLogin() {
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => LoginScreen()),
         (Route<dynamic> route) => false);
   }
 
-  Future<void> initializePreferences(BuildContext context) async {
+  Future<void> initializePreferences() async {
     SharedPreferencesHelper.setIntValue("step_auth", 0);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();

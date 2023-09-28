@@ -1,35 +1,30 @@
 import 'dart:io';
 
 import 'package:allojobstogo/screens/entreprises/dashboard_entreprise_screen.dart';
-import 'package:dotted_border/dotted_border.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:allojobstogo/utils/constants.dart';
 import 'package:allojobstogo/utils/preferences.dart';
 import 'package:allojobstogo/widgets/custom_widget.dart';
 import 'dart:convert';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:async';
 
 import '../candidats/dashboard_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  int typeUser;
-  String telephone, pays;
-  RegisterScreen(this.typeUser, this.telephone, this.pays);
+  final int typeUser;
+  final String telephone, pays;
+  const RegisterScreen(this.typeUser, this.telephone, this.pays, {super.key});
 
   @override
-  _RegisterScreenState createState() =>
-      _RegisterScreenState(this.typeUser, this.telephone, this.pays);
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  int typeUser;
-  String telephone, pays;
-  _RegisterScreenState(this.typeUser, this.telephone, this.pays);
+class RegisterScreenState extends State<RegisterScreen> {
   bool isLoading = false;
 
   final _firstNameController = TextEditingController();
@@ -50,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _passwordVisible = false;
   bool _passwordVisible2 = false;
 
-  var _image;
+  dynamic _image;
   String img64 = "";
   String myAvatar = "/avatars/default.png";
 
@@ -59,13 +54,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void initState() {
-    if (typeUser == 1) {
+    if (widget.typeUser == 1) {
       setState(() {
         countStep = 3;
       });
     }
     super.initState();
   }
+
+  String dateDebut = "";
+  final format = DateFormat("yyyy-MM-dd");
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +73,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
-        constraints: BoxConstraints.expand(),
-        decoration: BoxDecoration(
+        constraints: const BoxConstraints.expand(),
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/images/back1.png"),
             fit: BoxFit.cover,
@@ -85,8 +83,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         child: Container(
             height: hauteur,
-            margin: EdgeInsets.only(top: 50),
-            padding: EdgeInsets.all(10),
+            margin: const EdgeInsets.only(top: 50),
+            padding: const EdgeInsets.all(10),
             child: Stepper(
               type: StepperType.vertical,
               currentStep: currentStep,
@@ -97,22 +95,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: <Widget>[
                     (details.currentStep > 0)
                         ? Container(
-                            padding: EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(5),
                             width: 100,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: details.onStepCancel,
-                              padding: EdgeInsets.all(5.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 5.0,
+                                padding: const EdgeInsets.all(5.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                backgroundColor: Colors.red,
                               ),
-                              color: Colors.red,
-                              child: Row(
+                              onPressed: details.onStepCancel,
+                              child: const Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     FaIcon(
-                                      FontAwesomeIcons.arrowAltCircleLeft,
+                                      FontAwesomeIcons.circleLeft,
                                       size: 15,
                                       color: Colors.white,
                                     ),
@@ -128,19 +128,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ]),
                             ),
                           )
-                        : Center(),
+                        : const Center(),
                     !isLoading
                         ? Container(
-                            padding: EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(5),
                             width: 120,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: details.onStepContinue,
-                              padding: EdgeInsets.all(5.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 5.0,
+                                padding: const EdgeInsets.all(5.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                backgroundColor: Colors.green,
                               ),
-                              color: Colors.green,
+                              onPressed: details.onStepContinue,
                               child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -149,22 +151,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       (details.currentStep == countStep - 1)
                                           ? 'Terminer'
                                           : 'Continuer',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 15.0,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: currentFontFamily,
                                       ),
                                     ),
-                                    FaIcon(
-                                      FontAwesomeIcons.arrowAltCircleRight,
+                                    const FaIcon(
+                                      FontAwesomeIcons.circleRight,
                                       size: 15,
                                       color: Colors.white,
                                     ),
                                   ]),
                             ),
                           )
-                        : CircularProgressIndicator(),
+                        : const CircularProgressIndicator(),
                   ],
                 );
               },
@@ -175,13 +177,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }),
               onStepContinue: () {
                 bool isLastStep = (currentStep ==
-                    ((typeUser == 2)
+                    ((widget.typeUser == 2)
                                 ? getStepsEntreprise(hauteur, largeur)
                                 : getStepsCandidats(hauteur, largeur))
                             .length -
                         1);
                 if (isLastStep) {
-                  if (typeUser == 1) {
+                  if (widget.typeUser == 1) {
                     registerUser(context);
                   } else {
                     registerEntreprise(context);
@@ -195,7 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onStepTapped: (step) => setState(() {
                 currentStep = step;
               }),
-              steps: (typeUser == 2)
+              steps: (widget.typeUser == 2)
                   ? getStepsEntreprise(hauteur, largeur)
                   : getStepsCandidats(hauteur, largeur),
             )),
@@ -212,6 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Card(
             elevation: 10,
             child: Padding(
+              padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
                   CustomInput(
@@ -233,7 +236,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fontSize: 12,
                         fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   CustomInput(
@@ -254,15 +257,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _quartierController,
                     maxLength: 45,
                   ),
-                  CustomInput(
-                    hint: "Début de service",
-                    type: TextInputType.text,
+                  DateTimeField(
+                    decoration: const InputDecoration(
+                        hintText: "Début de service",
+                        border: OutlineInputBorder()),
+                    format: format,
                     controller: _dateController,
-                    maxLength: 45,
+                    onShowPicker: (context, currentValue) async {
+                      final date = await showDatePicker(
+                          context: context,
+                          firstDate: DateTime(1900),
+                          initialDate: DateTime.now(),
+                          lastDate: DateTime(2100));
+                      if (date != null) {
+                        setState(() {
+                          dateDebut = date.toString();
+                        });
+
+                        return date;
+                      } else {
+                        setState(() {
+                          dateDebut = currentValue.toString();
+                        });
+                        return currentValue;
+                      }
+                    },
                   ),
                 ],
               ),
-              padding: EdgeInsets.all(10),
             )),
       ),
       Step(
@@ -272,64 +294,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Card(
             elevation: 10,
             child: Padding(
+              padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  Container(
-                    child: new GestureDetector(
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(new FocusNode());
-                        _showPicker(context);
-                      },
-                      child: new Center(
-                          child: new Stack(
-                        children: <Widget>[
-                          _image == null
-                              ? CircleAvatar(
-                                  radius: largeur < hauteur
-                                      ? largeur / 6
-                                      : hauteur / 6,
-                                  backgroundImage:
-                                      NetworkImage(Constants.host + myAvatar),
-                                  backgroundColor: Colors.white)
-                              : new CircleAvatar(
-                                  radius: 80,
-                                  child: ClipOval(
-                                    child: Align(
-                                      heightFactor: 1,
-                                      widthFactor: 2.0,
-                                      child: new Image.file(_image),
-                                    ),
-                                  )),
-                          Positioned(
-                              bottom: -5,
-                              right: -12,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    shape: CircleBorder(),
-                                    primary: Constants.primaryColor),
-                                child: Container(
-                                  width: 25,
-                                  height: 25,
-                                  alignment: Alignment.center,
-                                  decoration:
-                                      BoxDecoration(shape: BoxShape.circle),
-                                  child: FaIcon(
-                                    FontAwesomeIcons.camera,
-                                    color: Colors.white,
-                                    size: 20,
+                  GestureDetector(
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      _showPicker(context);
+                    },
+                    child: Center(
+                        child: Stack(
+                      children: <Widget>[
+                        _image == null
+                            ? CircleAvatar(
+                                radius: largeur < hauteur
+                                    ? largeur / 6
+                                    : hauteur / 6,
+                                backgroundImage:
+                                    NetworkImage(Constants.host + myAvatar),
+                                backgroundColor: Colors.white)
+                            : CircleAvatar(
+                                radius: 80,
+                                child: ClipOval(
+                                  child: Align(
+                                    heightFactor: 1,
+                                    widthFactor: 2.0,
+                                    child: Image.file(_image),
                                   ),
+                                )),
+                        Positioned(
+                            bottom: -5,
+                            right: -12,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  shape: const CircleBorder(),
+                                  backgroundColor: Constants.primaryColor),
+                              child: Container(
+                                width: 25,
+                                height: 25,
+                                alignment: Alignment.center,
+                                decoration:
+                                    const BoxDecoration(shape: BoxShape.circle),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.camera,
+                                  color: Colors.white,
+                                  size: 20,
                                 ),
-                                onPressed: () async {
-                                  FocusScope.of(context)
-                                      .requestFocus(new FocusNode());
-                                  _showPicker(context);
-                                },
-                              )),
-                        ],
-                      )),
-                    ),
+                              ),
+                              onPressed: () async {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                                _showPicker(context);
+                              },
+                            )),
+                      ],
+                    )),
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   Center(
                       child: Text(
                     "Votre logo ou photo du recruteur",
@@ -337,17 +358,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style:
                         TextStyle(color: Constants.primaryColor, fontSize: 15),
                   )),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   CustomInput(
                     hint: "Quel poste recherchez-vous?",
                     type: TextInputType.text,
                     controller: _posteController,
                     maxLength: 45,
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   TextField(
                     maxLines: 4,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
                       fontSize: 15,
@@ -355,13 +376,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: InputDecoration(
                       hintText: "Description",
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.black),
+                        borderSide:
+                            const BorderSide(width: 1, color: Colors.black),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(width: 1, color: Constants.primaryColor),
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0)),
                       ),
                     ),
                     controller: _descriptionController,
@@ -370,7 +393,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-              padding: EdgeInsets.all(10),
             )),
       ),
       Step(
@@ -380,12 +402,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Card(
             elevation: 10,
             child: Padding(
+              padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
                   TextFormField(
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: _passwordVisible,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
                       fontSize: 15,
@@ -427,13 +450,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     controller: _passwordController,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   TextFormField(
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: _passwordVisible2,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
                       fontSize: 15,
@@ -477,7 +500,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   )
                 ],
               ),
-              padding: EdgeInsets.all(10),
             )),
       ),
     ];
@@ -492,6 +514,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Card(
             elevation: 10,
             child: Padding(
+              padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
                   CustomInput(
@@ -514,7 +537,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-              padding: EdgeInsets.all(10),
             )),
       ),
       Step(
@@ -524,88 +546,87 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Card(
             elevation: 10,
             child: Padding(
+              padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  Container(
-                    child: new GestureDetector(
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(new FocusNode());
-                        _showPicker(context);
-                      },
-                      child: new Center(
-                          child: new Stack(
-                        children: <Widget>[
-                          _image == null
-                              ? CircleAvatar(
-                                  radius: largeur < hauteur
-                                      ? largeur / 6
-                                      : hauteur / 6,
-                                  backgroundImage:
-                                      NetworkImage(Constants.host + myAvatar),
-                                  backgroundColor: Colors.white)
-                              : new CircleAvatar(
-                                  radius: 80,
-                                  child: ClipOval(
-                                    child: Align(
-                                      heightFactor: 1,
-                                      widthFactor: 2.0,
-                                      child: new Image.file(_image),
-                                    ),
-                                  )),
-                          Positioned(
-                              bottom: -5,
-                              right: -12,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    shape: CircleBorder(),
-                                    primary: Constants.primaryColor),
-                                child: Container(
-                                  width: 25,
-                                  height: 25,
-                                  alignment: Alignment.center,
-                                  decoration:
-                                      BoxDecoration(shape: BoxShape.circle),
-                                  child: FaIcon(
-                                    FontAwesomeIcons.camera,
-                                    color: Colors.white,
-                                    size: 20,
+                  GestureDetector(
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      _showPicker(context);
+                    },
+                    child: Center(
+                        child: Stack(
+                      children: <Widget>[
+                        _image == null
+                            ? CircleAvatar(
+                                radius: largeur < hauteur
+                                    ? largeur / 6
+                                    : hauteur / 6,
+                                backgroundImage:
+                                    NetworkImage(Constants.host + myAvatar),
+                                backgroundColor: Colors.white)
+                            : CircleAvatar(
+                                radius: 80,
+                                child: ClipOval(
+                                  child: Align(
+                                    heightFactor: 1,
+                                    widthFactor: 2.0,
+                                    child: Image.file(_image),
                                   ),
+                                )),
+                        Positioned(
+                            bottom: -5,
+                            right: -12,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  shape: const CircleBorder(),
+                                  backgroundColor: Constants.primaryColor),
+                              child: Container(
+                                width: 25,
+                                height: 25,
+                                alignment: Alignment.center,
+                                decoration:
+                                    const BoxDecoration(shape: BoxShape.circle),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.camera,
+                                  color: Colors.white,
+                                  size: 20,
                                 ),
-                                onPressed: () async {
-                                  FocusScope.of(context)
-                                      .requestFocus(new FocusNode());
-                                  _showPicker(context);
-                                },
-                              )),
-                        ],
-                      )),
-                    ),
+                              ),
+                              onPressed: () async {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                                _showPicker(context);
+                              },
+                            )),
+                      ],
+                    )),
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   Center(
                       child: Text(
                     "Charger votre photo",
                     style:
                         TextStyle(color: Constants.primaryColor, fontSize: 17),
                   )),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   CustomInput(
                     hint: "Adresse mail",
                     type: TextInputType.text,
                     controller: _emailController,
                     maxLength: 45,
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   CustomInput(
                     hint: "Votre dernier diplôme",
                     type: TextInputType.text,
                     controller: _lastDiplomeController,
                     maxLength: 45,
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   TextField(
                     maxLines: 4,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
                       fontSize: 15,
@@ -614,30 +635,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText:
                           "Décrivez votre dernière expérience ainsi que l'entreprise",
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.black),
+                        borderSide:
+                            const BorderSide(width: 1, color: Colors.black),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(width: 1, color: Constants.primaryColor),
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0)),
                       ),
                     ),
                     controller: _lastExperienceController,
                     keyboardType: TextInputType.text,
                     maxLength: 160,
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   CustomInput(
                     hint: "Intitulé du poste recherché",
                     type: TextInputType.text,
                     controller: _jobTitleController,
                     maxLength: 45,
                   ),
-                  SizedBox(height: 5.0),
+                  const SizedBox(height: 5.0),
                   TextField(
                     maxLines: 4,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
                       fontSize: 15,
@@ -645,13 +668,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: InputDecoration(
                       hintText: "Décrivez vous",
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.black),
+                        borderSide:
+                            const BorderSide(width: 1, color: Colors.black),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(width: 1, color: Constants.primaryColor),
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0)),
                       ),
                     ),
                     controller: _biographieController,
@@ -660,7 +685,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-              padding: EdgeInsets.all(10),
             )),
       ),
       Step(
@@ -670,12 +694,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Card(
             elevation: 10,
             child: Padding(
+              padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
                   TextFormField(
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: _passwordVisible,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
                       fontSize: 15,
@@ -717,13 +742,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     controller: _passwordController,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   TextFormField(
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: _passwordVisible2,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontFamily: currentFontFamily,
                       fontSize: 15,
@@ -767,7 +792,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   )
                 ],
               ),
-              padding: EdgeInsets.all(10),
             )),
       ),
     ];
@@ -775,38 +799,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   onImageButtonPressed(ImageSource source,
       {required BuildContext context}) async {
-    final ImagePicker _picker = ImagePicker();
-    File val;
+    final ImagePicker picker = ImagePicker();
 
-    final pickedFile = await _picker.getImage(
+    final pickedFile = await picker.pickImage(
       source: source,
     );
 
-    val = (await ImageCropper().cropImage(
-      sourcePath: pickedFile!.path,
-      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-      compressQuality: 100,
-      maxHeight: 400,
-      maxWidth: 400,
-      compressFormat: ImageCompressFormat.jpg,
-      androidUiSettings: AndroidUiSettings(
-        toolbarColor: Constants.primaryColor,
-        toolbarTitle: "AllôJobs",
-      ),
-    ))!;
-
     setState(() {
-      _image = val;
+      _image = File(pickedFile!.path);
     });
 
-    final bytes = File(val.path).readAsBytesSync();
+    final bytes = File(pickedFile!.path).readAsBytesSync();
 
     setState(() {
       img64 = base64Encode(bytes);
       print(img64);
     });
-    // print("cropper ${val.runtimeType}");
-    //capturedImageFile(val.path);
   }
 
   void _showPicker(context) {
@@ -814,45 +822,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
         context: context,
         builder: (BuildContext bc) {
           return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Constants.secondaryColor),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+            child: Wrap(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                  child: Text(
+                    "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.secondaryColor),
                   ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Téléverser une photo'),
-                      onTap: () {
-                        onImageButtonPressed(ImageSource.gallery,
-                            context: context);
-                        //_imgFromGallery();
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
+                ),
+                const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Téléverser une photo'),
                     onTap: () {
-                      onImageButtonPressed(ImageSource.camera,
+                      onImageButtonPressed(ImageSource.gallery,
                           context: context);
-                      //_imgFromCamera();
+                      //_imgFromGallery();
                       Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    onImageButtonPressed(ImageSource.camera, context: context);
+                    //_imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           );
         });
@@ -900,7 +906,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
       final response = await http.post(
           Uri.parse(
-              Constants.host + "/api/auth/register?token=" + Constants.token),
+              "${Constants.host}/api/auth/register?token=${Constants.token}"),
           body: {
             'first_name': firstName,
             'last_name': lastName,
@@ -909,15 +915,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'biographie': biographie,
             'last_diplome': lastDiplome,
             'last_experience': lastExperience,
-            'type_user': typeUser.toString(),
+            'type_user': widget.typeUser.toString(),
             'job': jobTitle,
-            'pays': pays,
+            'pays': widget.pays,
             'ville': ville,
             'avatar': img64,
             'cv': "",
-            'telephone': telephone
+            'telephone': widget.telephone
           });
-      print(response.body);
+
       var dataUser = json.decode(response.body);
       if (dataUser['error'] == true) {
         setState(() {
@@ -929,8 +935,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           isLoading = false;
         });
-        print(dataUser['message']);
-        print(dataUser['user']);
+
         SharedPreferencesHelper.setValue(
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
@@ -959,11 +964,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setIntValue("step_auth", 1);
         SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
 
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => DashboardScreen(0)),
-            (Route<dynamic> route) => false);
+        moveToDashboard();
       }
     }
+  }
+
+  moveToDashboard() {
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const DashboardScreen(0)),
+        (Route<dynamic> route) => false);
   }
 
   Future<void> registerEntreprise(BuildContext context) async {
@@ -998,14 +1007,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         isLoading = true;
       });
       final response = await http.post(
-          Uri.parse(Constants.host +
-              "/api/auth/register-entreprise?token=" +
-              Constants.token),
+          Uri.parse(
+              "${Constants.host}/api/auth/register-entreprise?token=${Constants.token}"),
           body: {
             'name': lastName,
             'password': password,
             'email': email,
-            'pays': pays,
+            'pays': widget.pays,
             'quartier': quartier,
             'date_debut': dateDebut,
             'activite': activite,
@@ -1013,10 +1021,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'poste': poste,
             'ville': ville,
             'avatar': img64,
-            'type_user': typeUser.toString(),
-            'telephone': telephone
+            'type_user': widget.typeUser.toString(),
+            'telephone': widget.telephone
           });
-      print(response.body);
+
       var dataUser = json.decode(response.body);
       if (dataUser['error'] == true) {
         setState(() {
@@ -1028,8 +1036,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           isLoading = false;
         });
-        print(dataUser['message']);
-        print(dataUser['user']);
+
         SharedPreferencesHelper.setValue(
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
@@ -1048,12 +1055,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SharedPreferencesHelper.setValue("token", dataUser['user']["token"]);
         SharedPreferencesHelper.setIntValue("step_auth", 1);
 
-        _showPopupAlert(context);
+        _showPopupAlert();
       }
     }
   }
 
-  void _showPopupAlert(BuildContext context) {
+  void _showPopupAlert() {
     Size size = MediaQuery.of(context).size;
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -1063,7 +1070,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         isDismissible: false,
         context: context,
         builder: (context) {
-          return Container(
+          return SizedBox(
             height: size.height * 0.5,
             child: Column(
               children: [
@@ -1076,10 +1083,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    DashboardEntrepriseScreen(0)),
+                                    const DashboardEntrepriseScreen(0)),
                             (Route<dynamic> route) => false);
                       },
-                      icon: Icon(Icons.clear),
+                      icon: const Icon(Icons.clear),
                     ),
                   ],
                 ),
@@ -1088,17 +1095,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 150,
                   width: 150,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: Text(
                       "Votre annonce est  bien enregistrée et sera validée dans les 24h ouvrables. Nous pouvons être amenés à vous appeler.",
                       style: TextStyle(color: Colors.black),
                       textAlign: TextAlign.center),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Padding(
@@ -1113,10 +1120,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) =>
-                                  DashboardEntrepriseScreen(0)),
+                                  const DashboardEntrepriseScreen(0)),
                           (Route<dynamic> route) => false);
                     },
-                    child: Text(
+                    child: const Text(
                       "Accéder au tableau de bord",
                       style: TextStyle(
                         color: Colors.white,

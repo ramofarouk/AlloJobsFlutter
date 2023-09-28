@@ -4,18 +4,14 @@ import 'package:allojobstogo/screens/auth/register_screen.dart';
 import 'package:allojobstogo/utils/constants.dart';
 
 class ChooseProfileScreen extends StatefulWidget {
-  String telephone, pays;
-  ChooseProfileScreen(this.telephone, this.pays);
+  final String telephone, pays;
+  const ChooseProfileScreen(this.telephone, this.pays, {super.key});
 
   @override
-  _ChooseProfileScreenState createState() =>
-      _ChooseProfileScreenState(this.telephone, this.pays);
+  ChooseProfileScreenState createState() => ChooseProfileScreenState();
 }
 
-class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
-  String telephone, pays;
-  _ChooseProfileScreenState(this.telephone, this.pays);
-
+class ChooseProfileScreenState extends State<ChooseProfileScreen> {
   final _keyForm = GlobalKey<FormState>();
 
   @override
@@ -25,8 +21,8 @@ class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-          constraints: BoxConstraints.expand(),
-          decoration: BoxDecoration(
+          constraints: const BoxConstraints.expand(),
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/images/back1.png"),
               fit: BoxFit.cover,
@@ -42,52 +38,98 @@ class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
                 Form(
                   key: _keyForm,
                   child: Container(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: largeur / 14,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image(
-                            image: AssetImage("assets/images/header.png"),
-                            width: 200.0,
-                            height: 200.0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: largeur / 14,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Image(
+                          image: AssetImage("assets/images/header.png"),
+                          width: 200.0,
+                          height: 200.0,
+                        ),
+                        const Text(
+                          "Je choisis mon profil",
+                          style: TextStyle(
+                            color: Color(0xff303030),
+                            fontSize: 20,
+                            fontFamily: currentFontFamily,
+                            fontWeight: FontWeight.w700,
                           ),
-                          Text(
-                            "Je choisis mon profil",
-                            style: TextStyle(
-                              color: Color(0xff303030),
-                              fontSize: 20,
-                              fontFamily: currentFontFamily,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 50,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            width: double.infinity,
-                            child: RaisedButton(
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
                               elevation: 5.0,
-                              onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return RegisterScreen(1, telephone, pays);
-                                }));
-                              },
-                              padding: EdgeInsets.all(10.0),
+                              padding: const EdgeInsets.all(10.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15.0),
                               ),
-                              color: Constants.primaryColor,
-                              child: Row(
+                              backgroundColor: Constants.primaryColor,
+                            ),
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return RegisterScreen(
+                                    1, widget.telephone, widget.pays);
+                              }));
+                            },
+                            child: const Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.userLarge,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'DEMANDEUR',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      letterSpacing: 1.5,
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: currentFontFamily,
+                                    ),
+                                  )
+                                ]),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 5.0,
+                                padding: const EdgeInsets.all(10.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                backgroundColor: Constants.thridColor,
+                              ),
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return RegisterScreen(
+                                      2, widget.telephone, widget.pays);
+                                }));
+                              },
+                              child: const Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     FaIcon(
-                                      FontAwesomeIcons.userAlt,
+                                      FontAwesomeIcons.building,
                                       size: 20,
                                       color: Colors.white,
                                     ),
@@ -95,7 +137,7 @@ class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
                                       width: 10,
                                     ),
                                     Text(
-                                      'DEMANDEUR',
+                                      'EMPLOYEUR',
                                       style: TextStyle(
                                         color: Colors.white,
                                         letterSpacing: 1.5,
@@ -103,52 +145,10 @@ class _ChooseProfileScreenState extends State<ChooseProfileScreen> {
                                         fontWeight: FontWeight.bold,
                                         fontFamily: currentFontFamily,
                                       ),
-                                    )
-                                  ]),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            width: double.infinity,
-                            child: RaisedButton(
-                                elevation: 5.0,
-                                onPressed: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return RegisterScreen(2, telephone, pays);
-                                  }));
-                                },
-                                padding: EdgeInsets.all(10.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                color: Constants.thridColor,
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      FaIcon(
-                                        FontAwesomeIcons.building,
-                                        size: 20,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        'EMPLOYEUR',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          letterSpacing: 1.5,
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: currentFontFamily,
-                                        ),
-                                      ),
-                                    ])),
-                          ),
-                        ],
-                      ),
+                                    ),
+                                  ])),
+                        ),
+                      ],
                     ),
                   ),
                 ),

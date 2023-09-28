@@ -8,17 +8,15 @@ import 'package:allojobstogo/screens/auth/login_screen.dart';
 import 'package:allojobstogo/utils/constants.dart';
 
 class ReinitializePasswordScreen extends StatefulWidget {
-  String phone;
-  ReinitializePasswordScreen(this.phone);
+  final String phone;
+  const ReinitializePasswordScreen(this.phone, {super.key});
   @override
-  _ReinitializePasswordScreenState createState() =>
-      _ReinitializePasswordScreenState(this.phone);
+  ReinitializePasswordScreenState createState() =>
+      ReinitializePasswordScreenState();
 }
 
-class _ReinitializePasswordScreenState
+class ReinitializePasswordScreenState
     extends State<ReinitializePasswordScreen> {
-  String phone;
-  _ReinitializePasswordScreenState(this.phone);
   final _passwordController = TextEditingController();
   final _passwordController2 = TextEditingController();
   bool isLoading = false;
@@ -30,7 +28,7 @@ class _ReinitializePasswordScreenState
     return TextFormField(
       keyboardType: TextInputType.visiblePassword,
       obscureText: _passwordVisible,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.black,
         fontFamily: currentFontFamily,
         fontSize: 19,
@@ -78,7 +76,7 @@ class _ReinitializePasswordScreenState
     return TextFormField(
       keyboardType: TextInputType.visiblePassword,
       obscureText: _passwordVisible2,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.black,
         fontFamily: currentFontFamily,
         fontSize: 19,
@@ -136,11 +134,10 @@ class _ReinitializePasswordScreenState
       isLoading = true;
     });
     final response = await http.post(
-        Uri.parse(Constants.host +
-            "/api/auth/reinitialize-password?token=" +
-            Constants.token),
-        body: {'password': password, 'telephone': phone});
-    print(response.body);
+        Uri.parse(
+            "${Constants.host}/api/auth/reinitialize-password?token=${Constants.token}"),
+        body: {'password': password, 'telephone': widget.phone});
+
     var dataUser = json.decode(response.body);
     if (dataUser['error'] == true) {
       setState(() {
@@ -151,13 +148,12 @@ class _ReinitializePasswordScreenState
       setState(() {
         isLoading = false;
       });
-      print(dataUser['message']);
-      print(dataUser['user']);
-      _showPopupAlert(context);
+
+      _showPopupAlert();
     }
   }
 
-  void _showPopupAlert(BuildContext context) {
+  void _showPopupAlert() {
     Size size = MediaQuery.of(context).size;
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -167,7 +163,7 @@ class _ReinitializePasswordScreenState
         isDismissible: false,
         context: context,
         builder: (context) {
-          return Container(
+          return SizedBox(
             height: size.height * 0.5,
             child: Column(
               children: [
@@ -182,7 +178,7 @@ class _ReinitializePasswordScreenState
                                 builder: (context) => LoginScreen()),
                             (Route<dynamic> route) => false);
                       },
-                      icon: Icon(Icons.clear),
+                      icon: const Icon(Icons.clear),
                     ),
                   ],
                 ),
@@ -191,17 +187,17 @@ class _ReinitializePasswordScreenState
                   height: 150,
                   width: 150,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: Text(
                       "Votre mot de passe a été bien réinitialisé. Veuillez vous connecter à présent.",
                       style: TextStyle(color: Colors.black),
                       textAlign: TextAlign.center),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Padding(
@@ -218,7 +214,7 @@ class _ReinitializePasswordScreenState
                               builder: (context) => LoginScreen()),
                           (Route<dynamic> route) => false);
                     },
-                    child: Text(
+                    child: const Text(
                       "Se Connecter maintenant",
                       style: TextStyle(
                         color: Colors.white,
@@ -235,7 +231,7 @@ class _ReinitializePasswordScreenState
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.dark,
@@ -247,8 +243,8 @@ class _ReinitializePasswordScreenState
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: Container(
-            constraints: BoxConstraints.expand(),
-            decoration: BoxDecoration(
+            constraints: const BoxConstraints.expand(),
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/back1.png"),
                 fit: BoxFit.cover,
@@ -264,90 +260,78 @@ class _ReinitializePasswordScreenState
                       Form(
                           key: _keyForm,
                           child: Container(
-                              child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: mQ.width / 15,
-                                  ),
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Image(
-                                          image: AssetImage(
-                                              "assets/images/header.png"),
-                                          width: 200.0,
-                                          height: 200.0,
-                                        ),
-                                        Text(
-                                            "Créer un nouveau mot de passe sûr.",
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                            textAlign: TextAlign.center),
-                                        SizedBox(height: 10),
-                                        _buildPasswordInput(),
-                                        SizedBox(height: 20),
-                                        _buildPasswordConfirmInput(),
-                                        SizedBox(height: 50),
-                                        !isLoading
-                                            ? Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 20.0),
-                                                child: SizedBox(
-                                                  height: 50,
-                                                  child: ElevatedButton(
-                                                      onPressed: () {
-                                                        final password =
-                                                            _passwordController
-                                                                .text
-                                                                .trim();
-                                                        final confirm =
-                                                            _passwordController2
-                                                                .text
-                                                                .trim();
-                                                        if (password == "" ||
-                                                            confirm == "") {
-                                                          _showAlertDialog(
-                                                              'Désolé',
-                                                              'Veuillez SVP renseigner les informations.');
-                                                        } else if (password !=
-                                                            confirm) {
-                                                          _showAlertDialog(
-                                                              'Désolé',
-                                                              'Mots de passes non identiques.');
-                                                        } else {
-                                                          updatePassword(
-                                                              password,
-                                                              context);
-                                                        }
-                                                      },
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            "TERMINER",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                          SizedBox(width: 20),
-                                                          Icon(
-                                                              Icons
-                                                                  .chevron_right,
-                                                              color:
-                                                                  Colors.white),
-                                                          SizedBox(width: 20),
-                                                        ],
-                                                      )),
-                                                ),
-                                              )
-                                            : Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              )
-                                      ]))))
+                              padding: EdgeInsets.symmetric(
+                                horizontal: mQ.width / 15,
+                              ),
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Image(
+                                      image: AssetImage(
+                                          "assets/images/header.png"),
+                                      width: 200.0,
+                                      height: 200.0,
+                                    ),
+                                    const Text(
+                                        "Créer un nouveau mot de passe sûr.",
+                                        style: TextStyle(color: Colors.black),
+                                        textAlign: TextAlign.center),
+                                    const SizedBox(height: 10),
+                                    _buildPasswordInput(),
+                                    const SizedBox(height: 20),
+                                    _buildPasswordConfirmInput(),
+                                    const SizedBox(height: 50),
+                                    !isLoading
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20.0),
+                                            child: SizedBox(
+                                              height: 50,
+                                              child: ElevatedButton(
+                                                  onPressed: () {
+                                                    final password =
+                                                        _passwordController.text
+                                                            .trim();
+                                                    final confirm =
+                                                        _passwordController2
+                                                            .text
+                                                            .trim();
+                                                    if (password == "" ||
+                                                        confirm == "") {
+                                                      _showAlertDialog('Désolé',
+                                                          'Veuillez SVP renseigner les informations.');
+                                                    } else if (password !=
+                                                        confirm) {
+                                                      _showAlertDialog('Désolé',
+                                                          'Mots de passes non identiques.');
+                                                    } else {
+                                                      updatePassword(
+                                                          password, context);
+                                                    }
+                                                  },
+                                                  child: const Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        "TERMINER",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      SizedBox(width: 20),
+                                                      Icon(Icons.chevron_right,
+                                                          color: Colors.white),
+                                                      SizedBox(width: 20),
+                                                    ],
+                                                  )),
+                                            ),
+                                          )
+                                        : const Center(
+                                            child: CircularProgressIndicator(),
+                                          )
+                                  ])))
                     ]))));
   }
 }

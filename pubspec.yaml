@@ -1,82 +1,94 @@
 name: allojobstogo
 description: A new Flutter project.
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+9
+version: 1.0.0+3
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   sqflite:
   path:
-  provider: ^6.0.1
-  flutter_icons: ^1.1.0
-  cupertino_icons: ^1.0.2
-  shared_preferences: ^2.0.0
-  url_launcher: 6.0.3
+  http:
+  intl:
+  provider:
+  flutter_launcher_icons:
+  cupertino_icons:
+  shared_preferences:
+  url_launcher:
   share:
-  webview_flutter: ^2.0.12
-  image_picker: 0.8.3
-  file_picker: 4.0.1
-  datetime_picker_formfield: 2.0.0
-  custom_navigation_bar: ^0.8.2
-  flutter_custom_clippers: ^2.0.0
-  clip_shadow: ^0.2.1
-  firebase_messaging: "^10.0.0"
-  firebase_auth: ^1.2.0
-  firebase_core: ^1.2.0
-  font_awesome_flutter: ^9.0.0
-  cached_network_image: ^3.2.0
-  flutter_typeahead: ^3.2.3
-  cron: ^0.4.0
-  country_code_picker: ^2.0.2
-  pin_code_fields: ^7.3.0
-  uuid: 3.0.5
-  flutter_polyline_points: ^1.0.0
-  location_permissions: ^4.0.0
-  liquid_progress_indicator: ^0.4.0
-  carousel_slider: ^4.0.0
-  dotted_border: ^2.0.0+2
+  webview_flutter:
+  image_picker:
+  file_picker:
+  datetime_picker_formfield:
+  custom_navigation_bar:
+  flutter_custom_clippers:
+  shadow_clip:
+  firebase_messaging:
+  firebase_auth:
+  firebase_core:
+  font_awesome_flutter:
+  cached_network_image:
+  flutter_typeahead:
+  cron:
+  upgrader:
+  country_code_picker:
+  pin_code_fields:
+  geolocator:
+  location:
+  google_maps_flutter:
+  #google_maps_place_picker: ^1.0.1
+  google_maps_webservice:
+  flutter_google_places_hoc081098:
+  google_api_headers:
+  uuid:
+  flutter_polyline_points:
+  location_permissions:
+  liquid_progress_indicator_v2:
+  carousel_slider:
+  dotted_border:
   map_picker:
-  geocoding: ^2.0.1
-  android_intent: ^2.0.2
-  image_cropper: ^1.4.1
+  geocoding:
+  #camera:
+  android_intent:
+  image_cropper:
   path_provider:
-  dio: ^4.0.4
-  percent_indicator: ^3.4.0
-  uni_links: ^0.5.1
-  flutter_swiper: ^1.1.6
-  vibration: ^1.7.3
-  flutter_svg: ^1.0.0
-  in_app_update: ^2.0.0
-  google_place: ^0.4.3
-  permission_handler: ^8.1.6
-  sliding_up_panel: ^2.0.0+1
-  new_version: ^0.3.1
-  expandable: ^5.0.1
-  package_info_plus: ^1.4.2
-  flutter_beep: ^1.0.0
-
+  dio:
+  percent_indicator:
+  uni_links:
+  flutter_swiper_view:
+  slider_button:
+  vibration:
+  flutter_beep:
+  flutter_svg:
+  google_place:
+  permission_handler:
+  sliding_up_panel:
+  new_version_plus:
+  expandable:
+  package_info_plus:
+  google_maps_widget:
+  lottie:
+  map_launcher:
 
 dependency_overrides:
-  firebase_messaging_platform_interface: 3.1.6
-
+  firebase_messaging_platform_interface:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-flutter:
+  flutter_lints: ^2.0.0
 
+flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
-
 
   fonts:
     - family: Metropolis

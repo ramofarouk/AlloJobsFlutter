@@ -1,32 +1,22 @@
-import 'dart:io';
-
 import 'package:allojobstogo/loaders/loader1.dart';
 import 'package:allojobstogo/models/entreprises.dart';
 import 'package:allojobstogo/utils/constants.dart';
 import 'package:allojobstogo/utils/preferences.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class ListEntreprisesScreen extends StatefulWidget {
-  final AnimationController _controller;
-  ListEntreprisesScreen(this._controller);
+  const ListEntreprisesScreen({super.key});
   @override
-  _ListEntreprisesScreenState createState() =>
-      _ListEntreprisesScreenState(this._controller);
+  ListEntreprisesScreenState createState() => ListEntreprisesScreenState();
 }
 
-class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
-  late double _scale;
-  final AnimationController _controller;
-
-  _ListEntreprisesScreenState(this._controller);
-
+class ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
   String firstName = "";
   String lastName = "";
   String phone = "", idUser = "";
@@ -42,7 +32,6 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
   int _currentPage = 0;
   final PageController _pageController = PageController(initialPage: 0);
 
-  var _myCv;
   String cv64 = "";
 
   _onPageChanged(int index) {
@@ -70,7 +59,7 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
       print(data);
       setState(() {
         for (var i in data) {
-          if (int.parse(i['entreprise']['status']) == 1) {
+          if (i['entreprise']['status'] == 1) {
             print("he");
             listEntreprises.add(ModelEntreprise(
               i['id'],
@@ -83,7 +72,7 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
               i['entreprise']['telephone'],
               i['entreprise']['quartier'],
               i['date_debut'],
-              int.parse(i['entreprise']['status']),
+              i['entreprise']['status'],
             ));
           }
         }
@@ -101,27 +90,26 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
   @override
   void initState() {
     id.then((int value) async {
-      print(value);
       setState(() {
         idUser = value.toString();
         getDatas(value);
       });
     });
     telephone.then((String value) async {
-      // print(value);
+      //
       setState(() {
         phone = value;
       });
     });
 
     nom.then((String value) async {
-      // print(value);
+      //
       setState(() {
         lastName = value;
       });
     });
     prenoms.then((String value) async {
-      // print(value);
+      //
       setState(() {
         firstName = value;
       });
@@ -132,11 +120,11 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    _scale = 1 - _controller.value;
+
     return Stack(children: [
       !isLoading
           ? Container(
-              margin: EdgeInsets.only(top: 5),
+              margin: const EdgeInsets.only(top: 5),
               height: screenSize.height * 0.72,
               width: screenSize.width,
               child: Padding(
@@ -159,13 +147,13 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
                             child: Card(
                                 elevation: 8,
                                 child: Container(
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10))),
                                     height: screenSize.height * 0.6,
-                                    margin: EdgeInsets.all(5),
-                                    padding: EdgeInsets.all(5),
+                                    margin: const EdgeInsets.all(5),
+                                    padding: const EdgeInsets.all(5),
                                     child: ListView(children: [
                                       Container(
                                         height: screenSize.height * .30,
@@ -175,43 +163,44 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
                                                 image: NetworkImage(
                                                     Constants.host +
                                                         entreprise.avatar)),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(30.0))),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(30.0))),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 5,
                                       ),
                                       Text(
                                         entreprise.nom,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      new Divider(
+                                      const Divider(
                                         height: 20,
                                         color: Colors.grey,
                                       ),
-                                      new Row(
+                                      Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
-                                          Container(
+                                          SizedBox(
                                             width: screenSize.width * 0.38,
                                             child: Wrap(
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.center,
                                                 children: [
-                                                  FaIcon(
+                                                  const FaIcon(
                                                     FontAwesomeIcons.layerGroup,
                                                     color: Colors.grey,
                                                     size: 15,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 5,
                                                   ),
                                                   Text(
                                                     entreprise.activite,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         fontSize: 13,
                                                         fontWeight:
                                                             FontWeight.bold),
@@ -223,24 +212,24 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
                                             width: 1,
                                             height: 30,
                                           ),
-                                          Container(
+                                          SizedBox(
                                             width: screenSize.width * 0.28,
                                             child: Wrap(
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.center,
                                                 children: [
-                                                  FaIcon(
+                                                  const FaIcon(
                                                     FontAwesomeIcons
                                                         .locationArrow,
                                                     color: Colors.grey,
                                                     size: 15,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 5,
                                                   ),
                                                   Text(entreprise.quartier,
-                                                      style: TextStyle(
-                                                          fontSize: 13,
+                                                      style: const TextStyle(
+                                                          fontSize: 10,
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                 ]),
@@ -250,88 +239,91 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
                                             width: 1,
                                             height: 30,
                                           ),
-                                          Container(
+                                          SizedBox(
                                             width: screenSize.width * 0.2,
                                             child: Wrap(
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.center,
                                                 children: [
-                                                  FaIcon(
+                                                  const FaIcon(
                                                     FontAwesomeIcons
                                                         .locationArrow,
                                                     color: Colors.grey,
                                                     size: 15,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 5,
                                                   ),
                                                   Text(entreprise.ville,
-                                                      style: TextStyle(
-                                                          fontSize: 13,
+                                                      style: const TextStyle(
+                                                          fontSize: 10,
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                 ]),
                                           ),
                                         ],
                                       ),
-                                      new Divider(
+                                      const Divider(
                                         height: 20,
                                         color: Colors.grey,
                                       ),
                                       Row(
                                         children: [
-                                          FaIcon(
+                                          const FaIcon(
                                             FontAwesomeIcons.briefcase,
                                             color: Colors.grey,
                                             size: 25,
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
-                                          Text(
-                                              "Poste recherché: " +
-                                                  entreprise.job,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
+                                          Expanded(
+                                            child: Text(
+                                                "Poste recherché: ${entreprise.job}",
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
                                         ],
                                       ),
-                                      new Divider(
+                                      const Divider(
                                         height: 20,
                                         color: Colors.grey,
                                       ),
                                       Row(
                                         children: [
-                                          FaIcon(
+                                          const FaIcon(
                                             FontAwesomeIcons.businessTime,
                                             color: Colors.grey,
                                             size: 25,
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
-                                          Text("Date: " + entreprise.dateDebut,
-                                              style: TextStyle(
+                                          Text(
+                                              "Date: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(entreprise.dateDebut))}",
+                                              style: const TextStyle(
                                                   fontWeight: FontWeight.bold)),
                                         ],
                                       ),
-                                      new Divider(
+                                      const Divider(
                                         height: 20,
                                         color: Colors.grey,
                                       ),
                                       Row(
                                         children: [
-                                          FaIcon(
+                                          const FaIcon(
                                             FontAwesomeIcons.briefcase,
                                             color: Colors.grey,
                                             size: 25,
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
-                                          Container(
+                                          SizedBox(
                                             width: screenSize.width * 0.75,
                                             child: Text(entreprise.description,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
                                           ),
@@ -340,7 +332,7 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
                                     ]))));
                       })))
           : Container(
-              margin: EdgeInsets.only(top: 60),
+              margin: const EdgeInsets.only(top: 60),
               height: screenSize.height * 0.7,
               width: screenSize.width,
               child: Center(
@@ -356,13 +348,14 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
               right: 5,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(), primary: Constants.thridColor),
+                    shape: const CircleBorder(),
+                    backgroundColor: Constants.thridColor),
                 child: Container(
                   width: 50,
                   height: 50,
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                  child: FaIcon(
+                  decoration: const BoxDecoration(shape: BoxShape.circle),
+                  child: const FaIcon(
                     FontAwesomeIcons.arrowRight,
                     color: Colors.white,
                     size: 20,
@@ -371,25 +364,26 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
                 onPressed: () async {
                   setState(() {
                     _pageController.nextPage(
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.bounceIn);
                   });
                 },
               ))
-          : Center(),
+          : const Center(),
       (_currentPage > 0)
           ? Positioned(
               bottom: 5,
               left: 5,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(), primary: Constants.secondaryColor),
+                    shape: const CircleBorder(),
+                    backgroundColor: Constants.secondaryColor),
                 child: Container(
                   width: 50,
                   height: 50,
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                  child: FaIcon(
+                  decoration: const BoxDecoration(shape: BoxShape.circle),
+                  child: const FaIcon(
                     FontAwesomeIcons.arrowLeft,
                     color: Colors.white,
                     size: 20,
@@ -398,12 +392,12 @@ class _ListEntreprisesScreenState extends State<ListEntreprisesScreen> {
                 onPressed: () async {
                   setState(() {
                     _pageController.previousPage(
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.bounceIn);
                   });
                 },
               ))
-          : Center(),
+          : const Center(),
     ]);
   }
 }

@@ -4,23 +4,21 @@ import 'package:allojobstogo/utils/constants.dart';
 import 'package:allojobstogo/utils/preferences.dart';
 import 'package:allojobstogo/widgets/custom_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:ui' as ui;
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen();
+  const ProfileScreen({super.key});
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  _ProfileScreenState();
+class ProfileScreenState extends State<ProfileScreen> {
+  ProfileScreenState();
 
   String idUser = "";
 
@@ -49,77 +47,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool isLoading = false;
 
-  bool isLoading2 = false;
-
   var _image;
   String img64 = "";
   String myAvatar = "/avatars/default.png";
 
+  GlobalKey<FormState> keyForm = GlobalKey();
+
   @override
   void initState() {
     id.then((int value) async {
-      print(value);
       setState(() {
         idUser = value.toString();
       });
     });
     email.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _emailController.text = value;
       });
     });
 
     nom.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _lastNameController.text = value;
       });
     });
     prenoms.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _firstNameController.text = value;
       });
     });
     quartier.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _quartierController.text = value;
       });
     });
     ville.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _villeController.text = value;
       });
     });
     description.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _descriptionController.text = value;
       });
     });
     job.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _jobController.text = value;
       });
     });
     lastExperience.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _lastExperienceController.text = value;
       });
     });
     lastDiplome.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _lastDiplomeController.text = value;
       });
     });
     avatar.then((String value) async {
-      // print(value);
+      //
       setState(() {
         myAvatar = value;
       });
@@ -129,17 +126,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget firstTab(largeur, hauteur) {
     return Padding(
-      child: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        children: [
-          Container(
-            child: new GestureDetector(
+      padding: const EdgeInsets.all(20),
+      child: Form(
+        key: keyForm,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          children: [
+            GestureDetector(
               onTap: () async {
-                FocusScope.of(context).requestFocus(new FocusNode());
+                FocusScope.of(context).requestFocus(FocusNode());
                 _showPicker(context);
               },
-              child: new Center(
-                  child: new Stack(
+              child: Center(
+                  child: Stack(
                 children: <Widget>[
                   _image == null
                       ? CircleAvatar(
@@ -147,13 +146,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           backgroundImage:
                               NetworkImage(Constants.host + myAvatar),
                           backgroundColor: Colors.white)
-                      : new CircleAvatar(
+                      : CircleAvatar(
                           radius: 80,
                           child: ClipOval(
                             child: Align(
                               heightFactor: 1,
                               widthFactor: 2.0,
-                              child: new Image.file(_image),
+                              child: Image.file(_image),
                             ),
                           )),
                   Positioned(
@@ -161,151 +160,155 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       right: -12,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(),
-                            primary: Constants.primaryColor),
+                            shape: const CircleBorder(),
+                            backgroundColor: Constants.primaryColor),
                         child: Container(
                           width: 25,
                           height: 25,
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          child: FaIcon(
+                          decoration:
+                              const BoxDecoration(shape: BoxShape.circle),
+                          child: const FaIcon(
                             FontAwesomeIcons.camera,
                             color: Colors.white,
                             size: 20,
                           ),
                         ),
                         onPressed: () async {
-                          FocusScope.of(context).requestFocus(new FocusNode());
+                          FocusScope.of(context).requestFocus(FocusNode());
                           _showPicker(context);
                         },
                       )),
                 ],
               )),
             ),
-          ),
-          SizedBox(height: 5.0),
-          Center(
-              child: Text(
-            "Votre logo ou photo du recruteur",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Constants.primaryColor, fontSize: 15),
-          )),
-          SizedBox(height: 5.0),
-          CustomInput(
-            hint: "Nom",
-            type: TextInputType.text,
-            controller: _lastNameController,
-            maxLength: 25,
-          ),
-          CustomInput(
-            hint: "Prénoms",
-            type: TextInputType.text,
-            controller: _firstNameController,
-            maxLength: 25,
-          ),
-          CustomInput(
-            hint: "Adresse mail",
-            type: TextInputType.text,
-            controller: _emailController,
-            maxLength: 45,
-          ),
-          SizedBox(height: 5.0),
-          CustomInput(
-            hint: "Votre dernier diplôme",
-            type: TextInputType.text,
-            controller: _lastDiplomeController,
-            maxLength: 45,
-          ),
-          SizedBox(height: 5.0),
-          TextField(
-            maxLines: 4,
-            style: TextStyle(
-              color: Colors.black,
-              fontFamily: currentFontFamily,
-              fontSize: 15,
+            const SizedBox(height: 5.0),
+            Center(
+                child: Text(
+              "Votre logo ou photo du recruteur",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Constants.primaryColor, fontSize: 15),
+            )),
+            const SizedBox(height: 5.0),
+            CustomInput(
+              hint: "Nom",
+              type: TextInputType.text,
+              controller: _lastNameController,
+              maxLength: 25,
             ),
-            decoration: InputDecoration(
-              hintText:
-                  "Décrivez votre dernière expérience ainsi que l'entreprise",
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 1, color: Colors.black),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 1, color: Constants.primaryColor),
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
+            CustomInput(
+              hint: "Prénoms",
+              type: TextInputType.text,
+              controller: _firstNameController,
+              maxLength: 25,
             ),
-            controller: _lastExperienceController,
-            keyboardType: TextInputType.text,
-            maxLength: 160,
-          ),
-          SizedBox(height: 5.0),
-          CustomInput(
-            hint: "Intitulé du poste recherché",
-            type: TextInputType.text,
-            controller: _jobController,
-            maxLength: 45,
-          ),
-          SizedBox(height: 5.0),
-          TextField(
-            maxLines: 4,
-            style: TextStyle(
-              color: Colors.black,
-              fontFamily: currentFontFamily,
-              fontSize: 15,
+            CustomInput(
+              hint: "Adresse mail",
+              type: TextInputType.text,
+              controller: _emailController,
+              maxLength: 45,
             ),
-            decoration: InputDecoration(
-              hintText: "Décrivez vous",
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 1, color: Colors.black),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 1, color: Constants.primaryColor),
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ),
+            const SizedBox(height: 5.0),
+            CustomInput(
+              hint: "Votre dernier diplôme",
+              type: TextInputType.text,
+              controller: _lastDiplomeController,
+              maxLength: 45,
             ),
-            controller: _descriptionController,
-            keyboardType: TextInputType.text,
-            maxLength: 400,
-          ),
-          CustomInput(
-            hint: "Ville",
-            type: TextInputType.text,
-            controller: _villeController,
-            maxLength: 25,
-          ),
-          SizedBox(height: 10.0),
-          !isLoading
-              ? Container(
-                  padding: EdgeInsets.all(5),
-                  width: 120,
-                  child: RaisedButton(
-                    elevation: 5.0,
-                    onPressed: () {
-                      updateUser(context);
-                    },
-                    padding: EdgeInsets.all(5.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    color: Constants.primaryColor,
-                    child: Text(
-                      'MODIFIER',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: currentFontFamily,
+            const SizedBox(height: 5.0),
+            TextField(
+              maxLines: 4,
+              style: const TextStyle(
+                color: Colors.black,
+                fontFamily: currentFontFamily,
+                fontSize: 15,
+              ),
+              decoration: InputDecoration(
+                hintText:
+                    "Décrivez votre dernière expérience ainsi que l'entreprise",
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1, color: Colors.black),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(width: 1, color: Constants.primaryColor),
+                  borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                ),
+              ),
+              controller: _lastExperienceController,
+              keyboardType: TextInputType.text,
+              maxLength: 160,
+            ),
+            const SizedBox(height: 5.0),
+            CustomInput(
+              hint: "Intitulé du poste recherché",
+              type: TextInputType.text,
+              controller: _jobController,
+              maxLength: 45,
+            ),
+            const SizedBox(height: 5.0),
+            TextField(
+              maxLines: 4,
+              style: const TextStyle(
+                color: Colors.black,
+                fontFamily: currentFontFamily,
+                fontSize: 15,
+              ),
+              decoration: InputDecoration(
+                hintText: "Décrivez vous",
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(width: 1, color: Colors.black),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(width: 1, color: Constants.primaryColor),
+                  borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                ),
+              ),
+              controller: _descriptionController,
+              keyboardType: TextInputType.text,
+              maxLength: 400,
+            ),
+            CustomInput(
+              hint: "Ville",
+              type: TextInputType.text,
+              controller: _villeController,
+              maxLength: 25,
+            ),
+            const SizedBox(height: 10.0),
+            !isLoading
+                ? Container(
+                    padding: const EdgeInsets.all(5),
+                    width: 120,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 5.0,
+                        padding: const EdgeInsets.all(5.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        backgroundColor: Constants.primaryColor,
+                      ),
+                      onPressed: () {
+                        updateUser(context);
+                      },
+                      child: const Text(
+                        'MODIFIER',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: currentFontFamily,
+                        ),
                       ),
                     ),
-                  ),
-                )
-              : CircularProgressIndicator()
-        ],
+                  )
+                : const Center(child: CircularProgressIndicator())
+          ],
+        ),
       ),
-      padding: EdgeInsets.all(20),
     );
   }
 
@@ -313,18 +316,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     double largeur = MediaQuery.of(context).size.width;
     double hauteur = MediaQuery.of(context).size.height;
-    return new Stack(
+    return Stack(
       children: <Widget>[
-        new Container(
+        Container(
           color: Constants.primaryColor,
         ),
-        new BackdropFilter(
-            filter: new ui.ImageFilter.blur(
+        BackdropFilter(
+            filter: ui.ImageFilter.blur(
               sigmaX: 6.0,
               sigmaY: 6.0,
             ),
-            child: new Container(
-              decoration: BoxDecoration(
+            child: Container(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(50.0)),
               ),
@@ -339,38 +342,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   onImageButtonPressed(ImageSource source,
       {required BuildContext context}) async {
-    final ImagePicker _picker = ImagePicker();
-    File val;
+    final ImagePicker picker = ImagePicker();
 
-    final pickedFile = await _picker.getImage(
+    final pickedFile = await picker.pickImage(
       source: source,
     );
 
-    val = (await ImageCropper().cropImage(
-      sourcePath: pickedFile!.path,
-      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-      compressQuality: 100,
-      maxHeight: 400,
-      maxWidth: 400,
-      compressFormat: ImageCompressFormat.jpg,
-      androidUiSettings: AndroidUiSettings(
-        toolbarColor: Constants.primaryColor,
-        toolbarTitle: "AllôJobs",
-      ),
-    ))!;
+    // val = (await ImageCropper().cropImage(
+    //   sourcePath: pickedFile!.path,
+    //   aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+    //   compressQuality: 100,
+    //   maxHeight: 400,
+    //   maxWidth: 400,
+    //   compressFormat: ImageCompressFormat.jpg,
+    //   androidUiSettings: AndroidUiSettings(
+    //     toolbarColor: Constants.primaryColor,
+    //     toolbarTitle: "AllôJobs",
+    //   ),
+    // ))!;
 
     setState(() {
-      _image = val;
+      _image = File(pickedFile!.path);
     });
 
-    final bytes = File(val.path).readAsBytesSync();
+    final bytes = File(pickedFile!.path).readAsBytesSync();
 
     setState(() {
       img64 = base64Encode(bytes);
       print(img64);
     });
-    // print("cropper ${val.runtimeType}");
-    //capturedImageFile(val.path);
   }
 
   void _showPicker(context) {
@@ -378,43 +378,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context: context,
         builder: (BuildContext bc) {
           return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    padding: EdgeInsets.all(5),
+            child: Wrap(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(5),
+                  child: const Text(
+                    "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Téléverser une photo'),
-                      onTap: () {
-                        onImageButtonPressed(ImageSource.gallery,
-                            context: context);
-                        //_imgFromGallery();
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
+                ),
+                const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Téléverser une photo'),
                     onTap: () {
-                      onImageButtonPressed(ImageSource.camera,
+                      onImageButtonPressed(ImageSource.gallery,
                           context: context);
-                      //_imgFromCamera();
+                      //_imgFromGallery();
                       Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    onImageButtonPressed(ImageSource.camera, context: context);
+                    //_imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           );
         });
@@ -428,14 +425,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final job = _jobController.text.trim();
     final lastExperience = _lastExperienceController.text.trim();
     final email = _emailController.text.trim();
-    final quartier = _quartierController.text.trim();
+
     final lastDiplome = _lastDiplomeController.text.trim();
 
     if (ville == "" ||
         lastName == "" ||
+        firstName == "" ||
         description == "" ||
         email == "" ||
-        quartier == "" ||
         job == "" ||
         lastExperience == "" ||
         lastDiplome == "") {
@@ -446,9 +443,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isLoading = true;
       });
       final response = await http.post(
-          Uri.parse(Constants.host +
-              "/api/auth/update-user?token=" +
-              Constants.token),
+          Uri.parse(
+              "${Constants.host}/api/auth/update-user?token=${Constants.token}"),
           body: {
             'first_name': firstName,
             'last_name': lastName,
@@ -473,8 +469,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           isLoading = false;
         });
-        print(dataUser['message']);
-        print(dataUser['user']);
+
         SharedPreferencesHelper.setValue(
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);

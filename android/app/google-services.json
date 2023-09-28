@@ -7,6 +7,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:953463528494:android:9762ff6afc51ea596293bf",
+        "android_client_info": {
+          "package_name": "com.allojobsafrica.www"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953463528494-cr8cpa9gkbtuuljltqbj4cig5sh0j7eu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCiUqR-bdl6SPsMALUzxuqBaesJ3xtWAg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953463528494-cr8cpa9gkbtuuljltqbj4cig5sh0j7eu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:953463528494:android:6932f00d8e227a776293bf",
         "android_client_info": {
           "package_name": "com.mautoafrica.www"

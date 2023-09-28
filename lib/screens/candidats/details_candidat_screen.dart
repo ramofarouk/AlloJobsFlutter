@@ -1,26 +1,19 @@
 import 'package:allojobstogo/models/candidats.dart';
-import 'package:allojobstogo/screens/chat_screen.dart';
 import 'package:allojobstogo/utils/constants.dart';
-import 'package:allojobstogo/utils/helper.dart';
 import 'package:allojobstogo/utils/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:ui' as ui;
 
 class DetailsCandidatScreen extends StatefulWidget {
-  late ModelCandidat candidat;
-  DetailsCandidatScreen(this.candidat);
+  final ModelCandidat candidat;
+  const DetailsCandidatScreen(this.candidat, {super.key});
   @override
-  _DetailsCandidatScreenState createState() =>
-      _DetailsCandidatScreenState(this.candidat);
+  DetailsCandidatScreenState createState() => DetailsCandidatScreenState();
 }
 
-class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
-  late ModelCandidat candidat;
-  _DetailsCandidatScreenState(this.candidat);
-
+class DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
   String phone = "", idUser = "";
   Future<int> idF = SharedPreferencesHelper.getIntValue("id");
 
@@ -40,26 +33,26 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
 
-    return new Stack(
+    return Stack(
       children: <Widget>[
-        new Container(
+        Container(
           color: Constants.primaryColor,
         ),
-        new BackdropFilter(
-            filter: new ui.ImageFilter.blur(
+        BackdropFilter(
+            filter: ui.ImageFilter.blur(
               sigmaX: 6.0,
               sigmaY: 6.0,
             ),
-            child: new Container(
-              decoration: BoxDecoration(
+            child: Container(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(50.0)),
               ),
             )),
-        new Scaffold(
-            appBar: new AppBar(
-              title: new Text(candidat.nom + " " + candidat.prenoms,
-                  style: TextStyle(
+        Scaffold(
+            appBar: AppBar(
+              title: Text("${widget.candidat.nom} ${widget.candidat.prenoms}",
+                  style: const TextStyle(
                     color: Colors.white,
                     letterSpacing: 1,
                     fontSize: 16.0,
@@ -70,14 +63,14 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
               centerTitle: false,
               elevation: 0.0,
               backgroundColor: Constants.primaryColor,
-              iconTheme: IconThemeData(color: Colors.white),
+              iconTheme: const IconThemeData(color: Colors.white),
               systemOverlayStyle: SystemUiOverlayStyle.light,
             ),
             backgroundColor: Colors.transparent,
-            body: new Container(
+            body: SizedBox(
               height: screenSize.height,
               child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: Center(
                       child: ListView(
                     children: [
@@ -87,41 +80,41 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
                             image: DecorationImage(
                                 fit: BoxFit.fitWidth,
                                 image: NetworkImage(
-                                    Constants.host + candidat.avatar)),
+                                    Constants.host + widget.candidat.avatar)),
                             borderRadius:
-                                BorderRadius.all(Radius.circular(30.0))),
+                                const BorderRadius.all(Radius.circular(30.0))),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Text(
-                        candidat.biographie,
-                        style: TextStyle(fontSize: 18),
+                        widget.candidat.biographie,
+                        style: const TextStyle(fontSize: 18),
                       ),
-                      new Divider(
+                      const Divider(
                         height: 20,
                         color: Colors.grey,
                       ),
-                      new Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Container(
+                          SizedBox(
                             width: screenSize.width * 0.3,
                             child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  FaIcon(
+                                  const FaIcon(
                                     FontAwesomeIcons.user,
                                     color: Colors.grey,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
                                   Text(
-                                    candidat.nom,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                    widget.candidat.nom,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ]),
                           ),
@@ -130,21 +123,21 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
                             width: 1,
                             height: 30,
                           ),
-                          Container(
+                          SizedBox(
                             width: screenSize.width * 0.3,
                             child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  FaIcon(
+                                  const FaIcon(
                                     FontAwesomeIcons.user,
                                     color: Colors.grey,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
-                                  Text(candidat.prenoms,
-                                      style: TextStyle(
+                                  Text(widget.candidat.prenoms,
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.bold)),
                                 ]),
                           ),
@@ -153,87 +146,90 @@ class _DetailsCandidatScreenState extends State<DetailsCandidatScreen> {
                             width: 1,
                             height: 30,
                           ),
-                          Container(
+                          SizedBox(
                             width: screenSize.width * 0.3,
                             child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  FaIcon(
+                                  const FaIcon(
                                     FontAwesomeIcons.city,
                                     color: Colors.grey,
                                     size: 25,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
-                                  Text(candidat.ville,
-                                      style: TextStyle(
+                                  Text(widget.candidat.ville,
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.bold)),
                                 ]),
                           ),
                         ],
                       ),
-                      new Divider(
+                      const Divider(
                         height: 20,
                         color: Colors.grey,
                       ),
                       Row(
                         children: [
-                          FaIcon(
+                          const FaIcon(
                             FontAwesomeIcons.briefcase,
                             color: Colors.grey,
                             size: 25,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
-                          Container(
+                          SizedBox(
                             width: screenSize.width * 0.75,
-                            child: Text("Poste recherché: " + candidat.job,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            child: Text(
+                                "Poste recherché: ${widget.candidat.job}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
-                      new Divider(
+                      const Divider(
                         height: 20,
                         color: Colors.grey,
                       ),
                       Row(
                         children: [
-                          FaIcon(
+                          const FaIcon(
                             FontAwesomeIcons.briefcase,
                             color: Colors.grey,
                             size: 25,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Container(
                             width: screenSize.width * 0.75,
                             child: Text(
-                                "Dernier diplôme: " + candidat.lastDiplome,
+                                "Dernier diplôme: ${widget.candidat.lastDiplome}",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
-                      new Divider(
+                      const Divider(
                         height: 20,
                         color: Colors.grey,
                       ),
                       Row(
                         children: [
-                          FaIcon(
+                          const FaIcon(
                             FontAwesomeIcons.briefcase,
                             color: Colors.grey,
                             size: 25,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
-                          Container(
+                          SizedBox(
                             width: screenSize.width * 0.8,
-                            child: Text(candidat.lastExperience,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            child: Text(widget.candidat.lastExperience,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                           ),
                         ],
                       )

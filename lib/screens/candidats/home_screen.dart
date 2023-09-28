@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:allojobstogo/loaders/loader1.dart';
 import 'package:allojobstogo/models/entreprises.dart';
 import 'package:allojobstogo/utils/constants.dart';
+import 'package:allojobstogo/utils/helper.dart';
 import 'package:allojobstogo/utils/preferences.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
@@ -12,21 +13,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
-  final AnimationController _controller;
-  HomeScreen(this._controller);
+  const HomeScreen({super.key});
   @override
-  _HomeScreenState createState() => _HomeScreenState(this._controller);
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late double _scale;
-  final AnimationController _controller;
-
-  _HomeScreenState(this._controller);
-
+class HomeScreenState extends State<HomeScreen> {
   String firstName = "";
   String lastName = "";
   String phone = "", idUser = "";
@@ -42,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 0;
   final PageController _pageController = PageController(initialPage: 0);
 
-  var _myCv;
   String cv64 = "";
   String _myCvName = "";
 
@@ -58,21 +52,20 @@ class _HomeScreenState extends State<HomeScreen> {
     _pageController.dispose();
   }
 
-  Future<Null> getDatas(int idUser) async {
+  Future<void> getDatas(int idUser) async {
     setState(() {
       listEntreprises.clear();
       isLoading = true;
     });
-    print("Getting datas");
+
     final responseData = await http.get(Uri.parse(
-        Constants.host + "/api/entreprises?token=" + Constants.token));
+        "${Constants.host}/api/entreprises?token=${Constants.token}"));
     if (responseData.statusCode == 200) {
       final data = jsonDecode(responseData.body);
-      print(data);
+
       setState(() {
         for (var i in data) {
-          if (int.parse(i['entreprise']['status']) == 1) {
-            print("he");
+          if (i['entreprise']['status'] == 1) {
             listEntreprises.add(ModelEntreprise(
               i['id'],
               i['entreprise']['nom'],
@@ -84,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
               i['entreprise']['telephone'],
               i['entreprise']['quartier'],
               i['date_debut'],
-              int.parse(i['entreprise']['status']),
+              i['entreprise']['status'],
             ));
           }
         }
@@ -95,34 +88,28 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isLoading = false;
     });
-
-    // actualize();
   }
 
   @override
   void initState() {
     id.then((int value) async {
-      print(value);
       setState(() {
         idUser = value.toString();
         getDatas(value);
       });
     });
     telephone.then((String value) async {
-      // print(value);
       setState(() {
         phone = value;
       });
     });
 
     nom.then((String value) async {
-      // print(value);
       setState(() {
         lastName = value;
       });
     });
     prenoms.then((String value) async {
-      // print(value);
       setState(() {
         firstName = value;
       });
@@ -133,12 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    _scale = 1 - _controller.value;
     return Stack(children: [
       !isLoading
           ? Container(
-              margin: EdgeInsets.only(top: 5),
-              height: screenSize.height * 0.75,
+              margin: const EdgeInsets.only(top: 5),
+              height: Helper.getScreenHeight(context) * 0.8,
               width: screenSize.width,
               child: Padding(
                   padding: const EdgeInsets.all(5),
@@ -160,59 +146,63 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Card(
                                 elevation: 8,
                                 child: Container(
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10))),
-                                    height: screenSize.height * 0.6,
-                                    margin: EdgeInsets.all(5),
-                                    padding: EdgeInsets.all(5),
+                                    height:
+                                        Helper.getScreenHeight(context) * 0.6,
+                                    margin: const EdgeInsets.all(5),
+                                    padding: const EdgeInsets.all(5),
                                     child: ListView(children: [
                                       Container(
-                                        height: screenSize.height * .3,
+                                        height:
+                                            Helper.getScreenHeight(context) *
+                                                .3,
                                         decoration: BoxDecoration(
                                             image: DecorationImage(
                                                 fit: BoxFit.fitWidth,
                                                 image: NetworkImage(
                                                     Constants.host +
                                                         entreprise.avatar)),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(30.0))),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(30.0))),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 5,
                                       ),
                                       Text(
                                         entreprise.nom,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      new Divider(
+                                      const Divider(
                                         height: 20,
                                         color: Colors.grey,
                                       ),
-                                      new Row(
+                                      Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
-                                          Container(
+                                          SizedBox(
                                             width: screenSize.width * 0.38,
                                             child: Wrap(
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.center,
                                                 children: [
-                                                  FaIcon(
+                                                  const FaIcon(
                                                     FontAwesomeIcons.layerGroup,
                                                     color: Colors.grey,
                                                     size: 15,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 5,
                                                   ),
                                                   Text(
                                                     entreprise.activite,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         fontSize: 13,
                                                         fontWeight:
                                                             FontWeight.bold),
@@ -224,24 +214,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                             width: 1,
                                             height: 30,
                                           ),
-                                          Container(
+                                          SizedBox(
                                             width: screenSize.width * 0.28,
                                             child: Wrap(
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.center,
                                                 children: [
-                                                  FaIcon(
+                                                  const FaIcon(
                                                     FontAwesomeIcons
                                                         .locationArrow,
                                                     color: Colors.grey,
                                                     size: 15,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 5,
                                                   ),
                                                   Text(entreprise.quartier,
-                                                      style: TextStyle(
-                                                          fontSize: 13,
+                                                      style: const TextStyle(
+                                                          fontSize: 10,
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                 ]),
@@ -251,107 +241,110 @@ class _HomeScreenState extends State<HomeScreen> {
                                             width: 1,
                                             height: 30,
                                           ),
-                                          Container(
+                                          SizedBox(
                                             width: screenSize.width * 0.2,
                                             child: Wrap(
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.center,
                                                 children: [
-                                                  FaIcon(
+                                                  const FaIcon(
                                                     FontAwesomeIcons
                                                         .locationArrow,
                                                     color: Colors.grey,
                                                     size: 15,
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 5,
                                                   ),
                                                   Text(entreprise.ville,
-                                                      style: TextStyle(
-                                                          fontSize: 13,
+                                                      style: const TextStyle(
+                                                          fontSize: 10,
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                 ]),
                                           ),
                                         ],
                                       ),
-                                      new Divider(
+                                      const Divider(
                                         height: 20,
                                         color: Colors.grey,
                                       ),
                                       Row(
                                         children: [
-                                          FaIcon(
+                                          const FaIcon(
                                             FontAwesomeIcons.briefcase,
                                             color: Colors.grey,
                                             size: 25,
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
-                                          Text(
-                                              "Poste recherché: " +
-                                                  entreprise.job,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                      new Divider(
-                                        height: 20,
-                                        color: Colors.grey,
-                                      ),
-                                      Row(
-                                        children: [
-                                          FaIcon(
-                                            FontAwesomeIcons.businessTime,
-                                            color: Colors.grey,
-                                            size: 25,
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Text("Date: " + entreprise.dateDebut,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                      new Divider(
-                                        height: 20,
-                                        color: Colors.grey,
-                                      ),
-                                      Row(
-                                        children: [
-                                          FaIcon(
-                                            FontAwesomeIcons.briefcase,
-                                            color: Colors.grey,
-                                            size: 25,
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Container(
-                                            width: screenSize.width * 0.75,
-                                            child: Text(entreprise.description,
-                                                style: TextStyle(
+                                          Expanded(
+                                            child: Text(
+                                                "Poste recherché: ${entreprise.job}",
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
                                           ),
                                         ],
                                       ),
-                                      new Divider(
+                                      const Divider(
+                                        height: 20,
+                                        color: Colors.grey,
+                                      ),
+                                      Row(
+                                        children: [
+                                          const FaIcon(
+                                            FontAwesomeIcons.businessTime,
+                                            color: Colors.grey,
+                                            size: 25,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                              "Date: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(entreprise.dateDebut))}",
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                      const Divider(
+                                        height: 20,
+                                        color: Colors.grey,
+                                      ),
+                                      Row(
+                                        children: [
+                                          const FaIcon(
+                                            FontAwesomeIcons.briefcase,
+                                            color: Colors.grey,
+                                            size: 25,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          SizedBox(
+                                            width: screenSize.width * 0.75,
+                                            child: Text(entreprise.description,
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
+                                        ],
+                                      ),
+                                      const Divider(
                                         height: 20,
                                         color: Colors.grey,
                                       ),
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                            primary: Colors.green),
+                                            backgroundColor: Colors.green),
                                         child: Container(
                                           width: screenSize.width * 0.9,
                                           height: 50,
                                           alignment: Alignment.center,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                               shape: BoxShape.circle),
-                                          child: Text("SOUMETTRE MON CV"),
+                                          child: const Text("SOUMETTRE MON CV"),
                                         ),
                                         onPressed: () async {
                                           _showPopUp(screenSize, entreprise);
@@ -360,8 +353,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ]))));
                       })))
           : Container(
-              margin: EdgeInsets.only(top: 60),
-              height: screenSize.height * 0.7,
+              margin: const EdgeInsets.only(top: 60),
+              height: Helper.getScreenHeight(context) * 0.7,
               width: screenSize.width,
               child: Center(
                 child: ColorLoader1(
@@ -376,13 +369,14 @@ class _HomeScreenState extends State<HomeScreen> {
               right: 5,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(), primary: Constants.thridColor),
+                    shape: const CircleBorder(),
+                    backgroundColor: Constants.thridColor),
                 child: Container(
                   width: 50,
                   height: 50,
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                  child: FaIcon(
+                  decoration: const BoxDecoration(shape: BoxShape.circle),
+                  child: const FaIcon(
                     FontAwesomeIcons.arrowRight,
                     color: Colors.white,
                     size: 20,
@@ -391,25 +385,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async {
                   setState(() {
                     _pageController.nextPage(
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.bounceIn);
                   });
                 },
               ))
-          : Center(),
+          : const Center(),
       (_currentPage > 0)
           ? Positioned(
               bottom: 5,
               left: 5,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(), primary: Constants.secondaryColor),
+                    shape: const CircleBorder(),
+                    backgroundColor: Constants.secondaryColor),
                 child: Container(
                   width: 50,
                   height: 50,
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                  child: FaIcon(
+                  decoration: const BoxDecoration(shape: BoxShape.circle),
+                  child: const FaIcon(
                     FontAwesomeIcons.arrowLeft,
                     color: Colors.white,
                     size: 20,
@@ -418,12 +413,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async {
                   setState(() {
                     _pageController.previousPage(
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         curve: Curves.bounceIn);
                   });
                 },
               ))
-          : Center(),
+          : const Center(),
     ]);
   }
 
@@ -433,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
       content: Text(content),
     );
     showDialog(
-        context: this.context, builder: (BuildContext context) => alertDialog);
+        context: context, builder: (BuildContext context) => alertDialog);
   }
 
   Future<void> registerUser(screenSize, entreprise) async {
@@ -445,14 +440,15 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       final response = await http.post(
           Uri.parse(
-              Constants.host + "/api/soumission/add?token=" + Constants.token),
+              "${Constants.host}/api/soumission/add?token=${Constants.token}"),
           body: {
             'entreprise_id': entreprise.id.toString(),
             'cv': cv64,
             'user_id': idUser
           });
-      print(response.body);
+
       var dataUser = json.decode(response.body);
+
       if (dataUser['error'] == true) {
         setState(() {
           isLoading = false;
@@ -462,78 +458,80 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           isLoading = false;
           cv64 = "";
-          _myCv = null;
+          _myCvName = "";
         });
-        print(dataUser['message']);
-        print(dataUser['user']);
 
-        showModalBottomSheet(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            isScrollControlled: true,
-            isDismissible: false,
-            context: this.context,
-            builder: (context) {
-              return Container(
-                height: screenSize.height * 0.5,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: Icon(Icons.clear),
-                        ),
-                      ],
-                    ),
-                    Image.asset(
-                      "assets/images/success.png",
-                      height: 150,
-                      width: 150,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Text(
-                          "Nous acheminons votre au recruteur. Seules les personnes sélectionnées seront contactées.",
-                          style: TextStyle(color: Colors.black, fontSize: 20),
-                          textAlign: TextAlign.center),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      child: TextButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Constants.primaryColor)),
-                        onPressed: () {
-                          Navigator.of(context).pop(context);
-                        },
-                        child: Text(
-                          "Fermer",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            });
+        _showSuccessPopup();
       }
     }
+  }
+
+  void _showSuccessPopup() {
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        isScrollControlled: true,
+        isDismissible: false,
+        context: context,
+        builder: (context) {
+          return SizedBox(
+            height: Helper.getScreenHeight(context) * 0.5,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.clear),
+                    ),
+                  ],
+                ),
+                Image.asset(
+                  "assets/images/success.png",
+                  height: 150,
+                  width: 150,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                      "Nous acheminons votre soumission au recruteur. Seules les personnes sélectionnées seront contactées.",
+                      style: TextStyle(color: Colors.black, fontSize: 20),
+                      textAlign: TextAlign.center),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Constants.primaryColor)),
+                    onPressed: () {
+                      Navigator.of(context).pop(context);
+                    },
+                    child: const Text(
+                      "Fermer",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
+        });
   }
 
   void _showPopUp(screenSize, entreprise) {
@@ -549,11 +547,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Stack(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black,
                             offset: Offset(0, 10),
@@ -562,38 +560,38 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
+                      const Text(
                         "Soumettre mon CV",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       GestureDetector(
                         onTap: () async {
                           Navigator.pop(context);
-                          FocusScope.of(context).requestFocus(new FocusNode());
+                          FocusScope.of(context).requestFocus(FocusNode());
                           pickFile(context, screenSize, entreprise);
                         },
-                        child: new DottedBorder(
-                            dashPattern: [6, 3, 2, 3],
+                        child: DottedBorder(
+                            dashPattern: const [6, 3, 2, 3],
                             borderType: BorderType.RRect,
-                            radius: Radius.circular(12),
-                            padding: EdgeInsets.all(6),
+                            radius: const Radius.circular(12),
+                            padding: const EdgeInsets.all(6),
                             color: Colors.grey,
                             child: ClipRRect(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(12)),
+                                  const BorderRadius.all(Radius.circular(12)),
                               child: GestureDetector(
-                                child: Container(
+                                child: SizedBox(
                                   height: 100,
                                   child: _myCvName == ""
-                                      ? Center(
+                                      ? const Center(
                                           child: Column(children: [
                                             SizedBox(height: 5),
-                                            FaIcon(FontAwesomeIcons.fileUpload,
+                                            FaIcon(FontAwesomeIcons.fileArrowUp,
                                                 size: 50, color: Colors.grey),
                                             SizedBox(height: 10),
                                             Text(
@@ -617,30 +615,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onTap: () async {
                                   Navigator.pop(context);
                                   FocusScope.of(context)
-                                      .requestFocus(new FocusNode());
+                                      .requestFocus(FocusNode());
                                   pickFile(context, screenSize, entreprise);
                                 },
                               ),
                             )),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(primary: Colors.green),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green),
                         child: Container(
                           width: screenSize.width * 0.9,
                           height: 50,
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          child: Text("VALIDER"),
+                          decoration:
+                              const BoxDecoration(shape: BoxShape.circle),
+                          child: const Text("VALIDER"),
                         ),
                         onPressed: () async {
                           Navigator.pop(context);
                           registerUser(screenSize, entreprise);
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                     ],
@@ -664,20 +664,13 @@ class _HomeScreenState extends State<HomeScreen> {
         _myCvName = file.name;
       });
 
-      final bytes = File(file.path).readAsBytesSync();
+      final bytes = File(file.path.toString()).readAsBytesSync();
 
       setState(() {
         cv64 = base64Encode(bytes);
-        print(cv64);
       });
 
       _showPopUp(screenSize, entreprise);
-
-      /* print(file.name);
-      print(file.bytes);
-      print(file.size);
-      print(file.extension);
-      print(file.path);*/
     } else {
       print("No file selected");
     }

@@ -9,23 +9,15 @@ import 'dart:ui' as ui;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import 'details_candidat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final AnimationController _controller;
-  HomeScreen(this._controller);
+  const HomeScreen({super.key});
   @override
-  _HomeScreenState createState() => _HomeScreenState(this._controller);
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late double _scale;
-  final AnimationController _controller;
-
-  _HomeScreenState(this._controller);
-
+class HomeScreenState extends State<HomeScreen> {
   String firstName = "";
   String lastName = "";
   String phone = "", idUser = "";
@@ -41,18 +33,18 @@ class _HomeScreenState extends State<HomeScreen> {
   List<ModelCandidat> listCandidatsFiltered = [];
   bool isLoading = true;
 
-  Future<Null> getDatas(int idUser) async {
+  Future<void> getDatas(int idUser) async {
     setState(() {
       listCandidats.clear();
       listCandidatsFiltered.clear();
       isLoading = true;
     });
-    print("Getting datas");
+
     final responseData = await http.get(
-        Uri.parse(Constants.host + "/api/candidats?token=" + Constants.token));
+        Uri.parse("${Constants.host}/api/candidats?token=${Constants.token}"));
     if (responseData.statusCode == 200) {
       final data = jsonDecode(responseData.body);
-      print(data);
+
       setState(() {
         for (var i in data) {
           listCandidats.add(ModelCandidat(
@@ -83,33 +75,32 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     id.then((int value) async {
-      print(value);
       setState(() {
         getDatas(value);
       });
     });
     telephone.then((String value) async {
-      // print(value);
+      //
       setState(() {
         phone = value;
       });
     });
 
     nom.then((String value) async {
-      // print(value);
+      //
       setState(() {
         lastName = value;
       });
     });
     prenoms.then((String value) async {
-      // print(value);
+      //
       setState(() {
         firstName = value;
       });
     });
     _contactController.addListener(() {
       setState(() {
-        if (_contactController.text.length > 0) {
+        if (_contactController.text.isNotEmpty) {
           String contact = _contactController.text.toString().trim();
 
           listCandidatsFiltered = listCandidats
@@ -127,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       .toLowerCase()
                       .contains(contact.toLowerCase())))
               .toList();
-          print(listCandidatsFiltered.length);
         } else {
           listCandidatsFiltered = listCandidats;
         }
@@ -139,10 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    _scale = 1 - _controller.value;
     return Stack(children: [
       Positioned(
-        top: 5,
+        top: 0,
         child: Card(
           elevation: 6.0,
           shape:
@@ -159,22 +148,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: _contactController,
                       keyboardType: TextInputType.text,
                       maxLines: 1,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontFamily: currentFontFamily,
                         fontSize: 18,
                       ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(top: 15),
+                        contentPadding: const EdgeInsets.only(top: 15),
                         hintText: "Nom de la personne ou Poste recherché",
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
                           fontFamily: currentFontFamily,
                         ),
                         prefixIcon: Padding(
-                            padding: EdgeInsets.only(top: 0),
+                            padding: const EdgeInsets.only(top: 0),
                             child: Icon(
                               Icons.contacts,
                               color: Colors.black.withOpacity(0.5),
@@ -188,15 +177,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       !isLoading
           ? Container(
-              margin: EdgeInsets.only(top: 50),
-              height: screenSize.height * 0.7,
+              margin: const EdgeInsets.only(top: 50),
+              height: screenSize.height * 0.8,
               width: screenSize.width,
               child: Padding(
                   padding: const EdgeInsets.all(5),
                   child: ListView.builder(
                     itemCount: listCandidatsFiltered.length,
                     shrinkWrap: true,
-                    padding: EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.only(top: 16),
                     itemBuilder: (context, index) {
                       final candidat = listCandidatsFiltered[index];
                       return GestureDetector(
@@ -208,30 +197,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         child: Card(
                           child: Padding(
-                              padding: EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(5),
                               child: ListTile(
-                                leading: Container(
-                                    child: CachedNetworkImage(
-                                        width: 60,
-                                        height: 60,
-                                        imageUrl:
-                                            Constants.host + candidat.avatar,
-                                        imageBuilder: (context,
-                                                imageProvider) =>
-                                            CircleAvatar(
-                                              backgroundImage: imageProvider,
-                                              maxRadius: 30,
-                                            ))),
+                                leading: CachedNetworkImage(
+                                    width: 60,
+                                    height: 60,
+                                    imageUrl: Constants.host + candidat.avatar,
+                                    imageBuilder: (context, imageProvider) =>
+                                        CircleAvatar(
+                                          backgroundImage: imageProvider,
+                                          maxRadius: 30,
+                                        )),
                                 title: Text(
-                                  candidat.nom + " " + candidat.prenoms,
-                                  style: TextStyle(
+                                  "${candidat.nom} ${candidat.prenoms}",
+                                  style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: ui.FontWeight.bold),
                                 ),
                                 subtitle: Text(
-                                  "Poste recherché: " +
-                                      candidat.job.toUpperCase(),
-                                  style: TextStyle(fontSize: 14),
+                                  "Poste recherché: ${candidat.job.toUpperCase()}",
+                                  style: const TextStyle(fontSize: 14),
                                 ),
                               )),
                         ),
@@ -239,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   )))
           : Container(
-              margin: EdgeInsets.only(top: 60),
+              margin: const EdgeInsets.only(top: 60),
               height: screenSize.height * 0.7,
               width: screenSize.width,
               child: Center(
@@ -250,14 +235,5 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             )
     ]);
-  }
-
-  void _showAlertDialog(String title, String content) {
-    var alertDialog = AlertDialog(
-      title: Text(title),
-      content: Text(content),
-    );
-    showDialog(
-        context: context, builder: (BuildContext context) => alertDialog);
   }
 }

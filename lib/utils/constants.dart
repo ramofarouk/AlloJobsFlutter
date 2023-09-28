@@ -7,9 +7,9 @@ class Constants {
   static const String logo = "assets/images/logo.png";
   static String appName = "AllôJobs";
 
-  static String host2 = "http://allojobs.ouiidrive.com";
+  static String host2 = "http://wiicom-consulting.com";
 
-  static String host = "http://allojobs.ouiidrive.com";
+  static String host = "http://wiicom-consulting.com";
 
   static Color primaryColor = const Color(0xff0F6A4E);
   static Color secondaryColor = const Color(0xffA50F14);

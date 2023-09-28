@@ -1,29 +1,21 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:allojobstogo/utils/constants.dart';
-import 'package:allojobstogo/utils/preferences.dart';
-import 'dart:convert';
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:allojobstogo/widgets/custom_widget.dart';
-import 'package:allojobstogo/widgets/header_widget.dart';
 
 import 'reinitialize_password_screen.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
-  String phone;
-  ForgetPasswordScreen(this.phone);
+  final String phone;
+  const ForgetPasswordScreen(this.phone, {super.key});
   @override
-  _ForgetPasswordScreenState createState() =>
-      _ForgetPasswordScreenState(this.phone);
+  ForgetPasswordScreenState createState() => ForgetPasswordScreenState();
 }
 
-class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
-  String phone;
-  _ForgetPasswordScreenState(this.phone);
+class ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final _codeController = TextEditingController();
   bool isLoading = false;
   String codeReally = "";
@@ -32,7 +24,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   void initState() {
     codeReally = Constants.getRandomInt(6);
-    print(codeReally);
+
     sendCode();
     super.initState();
   }
@@ -40,7 +32,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   Widget _buildCodeInput() {
     return TextFormField(
       keyboardType: TextInputType.number,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.black,
         fontFamily: currentFontFamily,
         fontSize: 19,
@@ -83,7 +75,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   Future<void> checkCode(String code, BuildContext context) async {
     if (code == codeReally) {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return ReinitializePasswordScreen(phone);
+        return ReinitializePasswordScreen(widget.phone);
       }));
     } else {
       _showAlertDialog('Désolé', 'Code erroné.');
@@ -92,7 +84,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.dark,
@@ -104,8 +96,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: Container(
-            constraints: BoxConstraints.expand(),
-            decoration: BoxDecoration(
+            constraints: const BoxConstraints.expand(),
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/back1.png"),
                 fit: BoxFit.cover,
@@ -121,60 +113,53 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       Form(
                           key: _keyForm,
                           child: Container(
-                              child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: mQ.width / 15,
-                                  ),
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Image(
-                                          image: AssetImage(
-                                              "assets/images/header.png"),
-                                          width: 200.0,
-                                          height: 200.0,
-                                        ),
-                                        Text(
-                                            "Un code vous a été envoyé par sms. Veuillez le confirmer pour continuer",
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                            textAlign: TextAlign.center),
-                                        SizedBox(height: 10),
-                                        _buildCodeInput(),
-                                        SizedBox(height: 30),
-                                        !isLoading
-                                            ? CustomButton(
-                                                color: Constants.primaryColor,
-                                                textColor: kWhite,
-                                                text: 'Confirmer',
-                                                onPressed: () {
-                                                  final code = _codeController
-                                                      .text
-                                                      .trim();
+                              padding: EdgeInsets.symmetric(
+                                horizontal: mQ.width / 15,
+                              ),
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Image(
+                                      image: AssetImage(
+                                          "assets/images/header.png"),
+                                      width: 200.0,
+                                      height: 200.0,
+                                    ),
+                                    const Text(
+                                        "Un code vous a été envoyé par sms. Veuillez le confirmer pour continuer",
+                                        style: TextStyle(color: Colors.black),
+                                        textAlign: TextAlign.center),
+                                    const SizedBox(height: 10),
+                                    _buildCodeInput(),
+                                    const SizedBox(height: 30),
+                                    !isLoading
+                                        ? CustomButton(
+                                            color: Constants.primaryColor,
+                                            textColor: kWhite,
+                                            text: 'Confirmer',
+                                            onPressed: () {
+                                              final code =
+                                                  _codeController.text.trim();
 
-                                                  if (code == "") {
-                                                    _showAlertDialog('Désolé',
-                                                        'Veuillez saisir un code!');
-                                                  } else {
-                                                    checkCode(code, context);
-                                                  }
-                                                },
-                                              )
-                                            : Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                      ]))))
+                                              if (code == "") {
+                                                _showAlertDialog('Désolé',
+                                                    'Veuillez saisir un code!');
+                                              } else {
+                                                checkCode(code, context);
+                                              }
+                                            },
+                                          )
+                                        : const Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                  ])))
                     ]))));
   }
 
   Future<void> sendCode() async {
-    final response = await http.post(
-        Uri.parse(Constants.host +
-            "/api/auth/send-code-sms?token=" +
-            Constants.token),
-        body: {'telephone': phone, 'code': codeReally});
-    print(response.body);
+    await http.post(
+        Uri.parse(
+            "${Constants.host}/api/auth/send-code-sms?token=${Constants.token}"),
+        body: {'telephone': widget.phone, 'code': codeReally});
   }
 }

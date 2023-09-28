@@ -8,24 +8,22 @@ import 'package:allojobstogo/widgets/custom_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:ui' as ui;
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen();
+  const ProfileScreen({super.key});
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  _ProfileScreenState();
+class ProfileScreenState extends State<ProfileScreen> {
+  ProfileScreenState();
 
   String idUser = "";
 
@@ -41,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _activiteController = TextEditingController();
   final _emailController = TextEditingController();
   final _quartierController = TextEditingController();
-  //final _dateController = TextEditingController();
+
   final _descriptionController = TextEditingController();
   final _villeController = TextEditingController();
   final _posteController = TextEditingController();
@@ -50,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool isLoading2 = false;
 
-  var _image;
+  dynamic _image;
   String img64 = "";
   String myAvatar = "/avatars/default.png";
 
@@ -62,63 +60,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     id.then((int value) async {
-      print(value);
       setState(() {
         idUser = value.toString();
         getOffres(idUser);
       });
     });
     email.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _emailController.text = value;
       });
     });
 
     nom.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _lastNameController.text = value;
       });
     });
     quartier.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _quartierController.text = value;
       });
     });
     ville.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _villeController.text = value;
       });
     });
-    /*date_debut.then((String value) async {
-      // print(value);
-      setState(() {
-        _dateController.text = value;
-      });
-    });*/
+
     activite.then((String value) async {
-      // print(value);
+      //
       setState(() {
         _activiteController.text = value;
       });
     });
-    /* job.then((String value) async {
-      // print(value);
-      setState(() {
-        _posteController.text = value;
-      });
-    });
-    description.then((String value) async {
-      // print(value);
-      setState(() {
-        _descriptionController.text = value;
-      });
-    });*/
+
     avatar.then((String value) async {
-      // print(value);
+      //
       setState(() {
         myAvatar = value;
       });
@@ -126,20 +107,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
-  Future<Null> getOffres(String idUser) async {
+  Future<void> getOffres(String idUser) async {
     setState(() {
       listOffres.clear();
       isLoading2 = true;
     });
-    print("Getting datas");
-    final responseData = await http.get(Uri.parse(Constants.host +
-        "/api/offres/" +
-        idUser +
-        "?token=" +
-        Constants.token));
+
+    final responseData = await http.get(Uri.parse(
+        "${Constants.host}/api/offres/$idUser?token=${Constants.token}"));
     if (responseData.statusCode == 200) {
       final data = jsonDecode(responseData.body);
-      print(data);
+
       setState(() {
         for (var i in data) {
           listOffres.add(ModelOffre(
@@ -153,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             i['entreprise']['telephone'],
             i['entreprise']['quartier'],
             i['date_debut'],
-            int.parse(i['entreprise']['status']),
+            i['entreprise']['status'],
           ));
         }
 
@@ -167,68 +145,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget firstTab(largeur, hauteur) {
     return Padding(
+      padding: const EdgeInsets.all(20),
       child: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         children: [
-          Container(
-            child: new GestureDetector(
-              onTap: () async {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                _showPicker(context);
-              },
-              child: new Center(
-                  child: new Stack(
-                children: <Widget>[
-                  _image == null
-                      ? CircleAvatar(
-                          radius: largeur < hauteur ? largeur / 6 : hauteur / 6,
-                          backgroundImage:
-                              NetworkImage(Constants.host + myAvatar),
-                          backgroundColor: Colors.white)
-                      : new CircleAvatar(
-                          radius: 80,
-                          child: ClipOval(
-                            child: Align(
-                              heightFactor: 1,
-                              widthFactor: 2.0,
-                              child: new Image.file(_image),
-                            ),
-                          )),
-                  Positioned(
-                      bottom: -5,
-                      right: -12,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(),
-                            primary: Constants.primaryColor),
-                        child: Container(
-                          width: 25,
-                          height: 25,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          child: FaIcon(
-                            FontAwesomeIcons.camera,
-                            color: Colors.white,
-                            size: 20,
+          GestureDetector(
+            onTap: () async {
+              FocusScope.of(context).requestFocus(FocusNode());
+              _showPicker(context);
+            },
+            child: Center(
+                child: Stack(
+              children: <Widget>[
+                _image == null
+                    ? CircleAvatar(
+                        radius: largeur < hauteur ? largeur / 6 : hauteur / 6,
+                        backgroundImage:
+                            NetworkImage(Constants.host + myAvatar),
+                        backgroundColor: Colors.white)
+                    : CircleAvatar(
+                        radius: 80,
+                        child: ClipOval(
+                          child: Align(
+                            heightFactor: 1,
+                            widthFactor: 2.0,
+                            child: Image.file(_image),
                           ),
+                        )),
+                Positioned(
+                    bottom: -5,
+                    right: -12,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          backgroundColor: Constants.primaryColor),
+                      child: Container(
+                        width: 25,
+                        height: 25,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
+                        child: const FaIcon(
+                          FontAwesomeIcons.camera,
+                          color: Colors.white,
+                          size: 20,
                         ),
-                        onPressed: () async {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          _showPicker(context);
-                        },
-                      )),
-                ],
-              )),
-            ),
+                      ),
+                      onPressed: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        _showPicker(context);
+                      },
+                    )),
+              ],
+            )),
           ),
-          SizedBox(height: 5.0),
+          const SizedBox(height: 5.0),
           Center(
               child: Text(
             "Votre logo ou photo du recruteur",
             textAlign: TextAlign.center,
             style: TextStyle(color: Constants.primaryColor, fontSize: 15),
           )),
-          SizedBox(height: 5.0),
+          const SizedBox(height: 5.0),
           CustomInput(
             hint: "Nom de la société",
             type: TextInputType.text,
@@ -248,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 fontSize: 12,
                 fontWeight: FontWeight.bold),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           CustomInput(
@@ -269,22 +246,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             controller: _quartierController,
             maxLength: 45,
           ),
-          SizedBox(height: 10.0),
+          const SizedBox(height: 10.0),
           !isLoading
               ? Container(
-                  padding: EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
                   width: 120,
-                  child: RaisedButton(
-                    elevation: 5.0,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5.0,
+                      padding: const EdgeInsets.all(5.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      backgroundColor: Constants.primaryColor,
+                    ),
                     onPressed: () {
                       updateEntreprise(context);
                     },
-                    padding: EdgeInsets.all(5.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    color: Constants.primaryColor,
-                    child: Text(
+                    child: const Text(
                       'MODIFIER',
                       style: TextStyle(
                         color: Colors.white,
@@ -295,18 +274,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 )
-              : CircularProgressIndicator()
+              : const Center(child: CircularProgressIndicator())
         ],
       ),
-      padding: EdgeInsets.all(20),
     );
   }
 
   Widget secondTab(largeur, hauteur) {
     return Padding(
+      padding: const EdgeInsets.all(5),
       child: !isLoading2
-          ? (listOffres.length != 0)
-              ? Container(
+          ? (listOffres.isNotEmpty)
+              ? SizedBox(
                   height: hauteur * 0.6,
                   width: largeur,
                   child: Padding(
@@ -314,7 +293,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: ListView.builder(
                         itemCount: listOffres.length,
                         shrinkWrap: true,
-                        padding: EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.only(top: 16),
                         itemBuilder: (context, index) {
                           final offre = listOffres[index];
                           return GestureDetector(
@@ -322,33 +301,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Card(
                               elevation: 10,
                               child: Padding(
-                                  padding: EdgeInsets.all(5),
+                                  padding: const EdgeInsets.all(5),
                                   child: ListTile(
-                                    leading: Container(
-                                        child: CachedNetworkImage(
-                                            width: 60,
-                                            height: 60,
-                                            imageUrl:
-                                                Constants.host + offre.avatar,
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    CircleAvatar(
-                                                      backgroundImage:
-                                                          imageProvider,
-                                                      maxRadius: 30,
-                                                    ))),
+                                    leading: CachedNetworkImage(
+                                        width: 60,
+                                        height: 60,
+                                        imageUrl: Constants.host + offre.avatar,
+                                        imageBuilder: (context,
+                                                imageProvider) =>
+                                            CircleAvatar(
+                                              backgroundImage: imageProvider,
+                                              maxRadius: 30,
+                                            )),
                                     title: Text(
                                       offre.job.toUpperCase(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: ui.FontWeight.bold),
                                     ),
                                     subtitle: Text(
-                                      "Description: " +
-                                          offre.description +
-                                          "\nDate de service: " +
-                                          offre.dateDebut,
-                                      style: TextStyle(fontSize: 14),
+                                      "Description: ${offre.description}\nDate de service: ${DateFormat('dd-MM-yyyy').format(DateTime.parse(offre.dateDebut))}",
+                                      style: const TextStyle(fontSize: 14),
                                     ),
                                   )),
                             ),
@@ -359,12 +332,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   alignment: Alignment.center,
                   height: hauteur * 0.6,
                   width: largeur,
-                  child: Text(
+                  child: const Text(
                     "Aucune offre publiée",
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ))
           : Container(
-              margin: EdgeInsets.only(top: 60),
+              margin: const EdgeInsets.only(top: 60),
               height: hauteur * 0.7,
               width: largeur,
               child: Center(
@@ -374,7 +347,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-      padding: EdgeInsets.all(5),
     );
   }
 
@@ -382,34 +354,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     double largeur = MediaQuery.of(context).size.width;
     double hauteur = MediaQuery.of(context).size.height;
-    return new Stack(
+    return Stack(
       children: <Widget>[
-        new Container(
+        Container(
           color: Constants.primaryColor,
         ),
-        new BackdropFilter(
-            filter: new ui.ImageFilter.blur(
+        BackdropFilter(
+            filter: ui.ImageFilter.blur(
               sigmaX: 6.0,
               sigmaY: 6.0,
             ),
-            child: new Container(
-              decoration: BoxDecoration(
+            child: Container(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(50.0)),
               ),
             )),
-        new DefaultTabController(
+        DefaultTabController(
             length: 2,
             child: Scaffold(
-                appBar: new AppBar(
+                appBar: AppBar(
                   elevation: 0.0,
                   backgroundColor: Constants.primaryColor,
-                  iconTheme: IconThemeData(color: Colors.white),
+                  iconTheme: const IconThemeData(color: Colors.white),
                   title: TabBar(
                     labelColor: Colors.white,
                     indicatorWeight: 5,
                     indicatorColor: Constants.thridColor,
-                    tabs: [
+                    tabs: const [
                       Tab(
                         child: Text("Mon profil"),
                       ),
@@ -424,7 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () {
                     _addOffre(largeur, hauteur);
                   },
-                  child: FaIcon(FontAwesomeIcons.plusCircle),
+                  child: const FaIcon(FontAwesomeIcons.circlePlus),
                 ),
                 backgroundColor: Colors.transparent,
                 body: TabBarView(
@@ -439,35 +411,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   onImageButtonPressed(ImageSource source,
       {required BuildContext context}) async {
-    final ImagePicker _picker = ImagePicker();
-    File val;
+    final ImagePicker picker = ImagePicker();
 
-    final pickedFile = await _picker.getImage(
+    final pickedFile = await picker.pickImage(
       source: source,
     );
 
-    val = (await ImageCropper().cropImage(
-      sourcePath: pickedFile!.path,
-      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-      compressQuality: 100,
-      maxHeight: 400,
-      maxWidth: 400,
-      compressFormat: ImageCompressFormat.jpg,
-      androidUiSettings: AndroidUiSettings(
-        toolbarColor: Constants.primaryColor,
-        toolbarTitle: "AllôJobs",
-      ),
-    ))!;
+    // val = (await ImageCropper().cropImage(
+    //   sourcePath: pickedFile!.path,
+    //   aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+    //   compressQuality: 100,
+    //   maxHeight: 400,
+    //   maxWidth: 400,
+    //   compressFormat: ImageCompressFormat.jpg,
+    //   androidUiSettings: AndroidUiSettings(
+    //     toolbarColor: Constants.primaryColor,
+    //     toolbarTitle: "AllôJobs",
+    //   ),
+    // ))!;
 
     setState(() {
-      _image = val;
+      _image = File(pickedFile!.path);
     });
 
-    final bytes = File(val.path).readAsBytesSync();
+    final bytes = File(pickedFile!.path).readAsBytesSync();
 
     setState(() {
       img64 = base64Encode(bytes);
-      print(img64);
     });
     // print("cropper ${val.runtimeType}");
     //capturedImageFile(val.path);
@@ -478,43 +448,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context: context,
         builder: (BuildContext bc) {
           return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    padding: EdgeInsets.all(5),
+            child: Wrap(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(5),
+                  child: const Text(
+                    "Merci de mettre votre propre photo sinon \nvotre compte sera supprimé",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Téléverser une photo'),
-                      onTap: () {
-                        onImageButtonPressed(ImageSource.gallery,
-                            context: context);
-                        //_imgFromGallery();
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
+                ),
+                const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Téléverser une photo'),
                     onTap: () {
-                      onImageButtonPressed(ImageSource.camera,
+                      onImageButtonPressed(ImageSource.gallery,
                           context: context);
-                      //_imgFromCamera();
+                      //_imgFromGallery();
                       Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    onImageButtonPressed(ImageSource.camera, context: context);
+                    //_imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           );
         });
@@ -542,9 +509,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isLoading = true;
       });
       final response = await http.post(
-          Uri.parse(Constants.host +
-              "/api/auth/update-entreprise?token=" +
-              Constants.token),
+          Uri.parse(
+              "${Constants.host}/api/auth/update-entreprise?token=${Constants.token}"),
           body: {
             'name': lastName,
             'email': email,
@@ -554,7 +520,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'avatar': img64,
             'user_id': idUser,
           });
-      print(response.body);
+
       var dataUser = json.decode(response.body);
       if (dataUser['error'] == true) {
         setState(() {
@@ -566,8 +532,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           isLoading = false;
         });
-        print(dataUser['message']);
-        print(dataUser['user']);
+
         SharedPreferencesHelper.setValue(
             "telephone", dataUser['user']["telephone"]);
         SharedPreferencesHelper.setValue("nom", dataUser['user']["nom"]);
@@ -613,15 +578,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               backgroundColor: Colors.transparent,
               child: Stack(children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                       left: 10, top: 20 + 20, right: 10, bottom: 10),
-                  margin: EdgeInsets.only(top: 47),
+                  margin: const EdgeInsets.only(top: 47),
                   width: largeur * 0.80,
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black,
                             offset: Offset(0, 10),
@@ -636,9 +601,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         controller: _posteController,
                         maxLength: 45,
                       ),
-                      SizedBox(height: 5.0),
+                      const SizedBox(height: 5.0),
                       DateTimeField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.event,
                             color: Colors.black,
@@ -669,7 +634,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             setState(() {
                               dateDebut = date.toString();
                             });
-                            print(dateDebut);
+
                             return date;
                           } else {
                             setState(() {
@@ -679,10 +644,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                         },
                       ),
-                      SizedBox(height: 10.0),
+                      const SizedBox(height: 10.0),
                       TextField(
                         maxLines: 4,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.black,
                           fontFamily: currentFontFamily,
                           fontSize: 15,
@@ -691,14 +656,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           hintText: "Description",
                           enabledBorder: OutlineInputBorder(
                             borderSide:
-                                BorderSide(width: 1, color: Colors.black),
+                                const BorderSide(width: 1, color: Colors.black),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 width: 1, color: Constants.primaryColor),
                             borderRadius:
-                                BorderRadius.all(Radius.circular(10.0)),
+                                const BorderRadius.all(Radius.circular(10.0)),
                           ),
                         ),
                         controller: _descriptionController,
@@ -728,11 +693,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Navigator.pop(dialogContext);
                                   addOffer(context);
                                 },
-                                child: Row(
+                                child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   // ignore: prefer_const_literals_to_create_immutables
                                   children: [
-                                    const Text("AJOUTER",
+                                    Text("AJOUTER",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -752,7 +717,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: Colors.white,
                     radius: 40,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(40)),
                         child: Image.asset("assets/images/logo.png")),
                   ),
                 ),
@@ -763,6 +729,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.all(10),
                       child: CircleAvatar(
                         radius: 15,
+                        backgroundColor: Constants.thridColor,
                         child: IconButton(
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -773,7 +740,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             size: 15,
                           ),
                         ),
-                        backgroundColor: Constants.thridColor,
                       )),
                 ),
               ]));
@@ -794,14 +760,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
       final response = await http.post(
           Uri.parse(
-              Constants.host + "/api/offres/add?token=" + Constants.token),
+              "${Constants.host}/api/offres/add?token=${Constants.token}"),
           body: {
             'date_debut': dateDebut,
             'description': description,
             'job': poste,
             'user_id': idUser,
           });
-      print(response.body);
+
       var dataUser = json.decode(response.body);
       if (dataUser['error'] == true) {
         setState(() {
@@ -813,8 +779,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           isLoading2 = false;
         });
-        print(dataUser['message']);
-        print(dataUser['user']);
 
         getOffres(idUser);
 
