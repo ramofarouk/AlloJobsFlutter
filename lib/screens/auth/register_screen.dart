@@ -813,7 +813,6 @@ class RegisterScreenState extends State<RegisterScreen> {
 
     setState(() {
       img64 = base64Encode(bytes);
-      print(img64);
     });
   }
 
@@ -896,7 +895,7 @@ class RegisterScreenState extends State<RegisterScreen> {
           'Désolé', 'Veuillez renseigner toutes vos informations.');
     } else if (password == "" || confirm == "") {
       _showAlertDialog('Désolé', 'Veuillez créer des mots de passes valides.');
-    } else if (img64 == "") {
+    } else if (img64.isEmpty) {
       _showAlertDialog('Désolé', 'Veuillez téléverser votre photo');
     } else if (password != confirm) {
       _showAlertDialog('Désolé', 'Mots de passes non identiques.');
@@ -996,7 +995,7 @@ class RegisterScreenState extends State<RegisterScreen> {
         quartier == "") {
       _showAlertDialog(
           'Désolé', 'Veuillez renseigner toutes les informations.');
-    } else if (img64 == "") {
+    } else if (img64.isEmpty) {
       _showAlertDialog('Désolé', 'Veuillez téléverser votre photo');
     } else if (password == "" || confirm == "") {
       _showAlertDialog('Désolé', 'Veuillez créer des mots de passes valides.');

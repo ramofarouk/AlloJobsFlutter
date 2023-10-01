@@ -86,14 +86,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: CountryCodePicker(
                       onChanged: (e) {
                         setState(() {
-                          indicatif = e.code.toString();
+                          indicatif = e.dialCode.toString();
                           pays = e.name.toString();
                           print(pays);
                         });
                       },
                       // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
                       initialSelection: 'TG',
-                      favorite: ['+228', 'TG'],
+                      favorite: const ['+228', 'TG'],
                       // optional. Shows only country name and flag
                       showCountryOnly: false,
                       // optional. Shows only country name and flag when popup is closed.
@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextField(
                         autofocus: false,
                         inputFormatters: [
-                          LengthLimitingTextInputFormatter(8),
+                          LengthLimitingTextInputFormatter(12),
                         ],
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -222,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print(phone);
       final response = await http.post(
           Uri.parse(
-              Constants.host + "/api/auth/login?token=" + Constants.token),
+              "${Constants.host}/api/auth/login?token=${Constants.token}"),
           body: {'telephone': phone});
       print(response.body);
       var dataUser = json.decode(response.body);

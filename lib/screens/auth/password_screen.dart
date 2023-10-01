@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:allojobstogo/screens/candidats/dashboard_screen.dart';
+import 'package:allojobstogo/screens/entreprises/dashboard_entreprise_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -214,7 +215,7 @@ class PasswordScreenState extends State<PasswordScreen> {
             "last_experience", dataUser['user']["last_experience"]);
         SharedPreferencesHelper.setValue(
             "prenoms", dataUser['user']["prenoms"]);
-        moveToDashboard();
+        moveToDashboard(1);
       } else {
         SharedPreferencesHelper.setValue(
             "activite", dataUser['user']["activite"]);
@@ -222,14 +223,21 @@ class PasswordScreenState extends State<PasswordScreen> {
             "quartier", dataUser['user']["quartier"]);
         SharedPreferencesHelper.setValue("ville", dataUser['user']["ville"]);
         SharedPreferencesHelper.setValue("email", dataUser['user']["email"]);
-        moveToDashboard();
+        moveToDashboard(2);
       }
     }
   }
 
-  moveToDashboard() {
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const DashboardScreen(0)),
-        (Route<dynamic> route) => false);
+  moveToDashboard(type) {
+    if (type == 1) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const DashboardScreen(0)),
+          (Route<dynamic> route) => false);
+    } else {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const DashboardEntrepriseScreen(0)),
+          (Route<dynamic> route) => false);
+    }
   }
 }
